@@ -1,0 +1,110 @@
+[
+  {
+    "case_id": "C001",
+    "domain": "contract",
+    "difficulty": "easy",
+    "fact_pattern": "Ramesh agreed to supply 500 kg of wheat to Suresh by March 1st for Rs. 50,000. Ramesh failed to deliver. Suresh had to buy from another supplier at Rs. 65,000.",
+    "applicable_statutes": ["Indian Contract Act 1872, Section 73 - Compensation for loss"],
+    "precedents": [
+      {
+        "case_id": "P001",
+        "case_name": "Hadley v Baxendale (1854)",
+        "verdict": "liable",
+        "rationale": "Damages naturally arising from breach are recoverable."
+      },
+      {
+        "case_id": "P002",
+        "case_name": "Murlidhar Chiranjilal v Harishchandra Dwarkadas (1962)",
+        "verdict": "liable",
+        "rationale": "Seller liable for market price difference upon breach."
+      }
+    ],
+    "evidence_flags": [],
+    "gold_label_verdict": "liable",
+    "gold_label_reasoning": "Clear breach of contract. Damages of Rs.15,000 recoverable under Section 73."
+  },
+  {
+    "case_id": "C002",
+    "domain": "contract",
+    "difficulty": "easy",
+    "fact_pattern": "Priya hired a contractor to renovate her shop within 30 days for Rs. 2,00,000. The contractor completed the work in 45 days. Priya refused to pay claiming full breach.",
+    "applicable_statutes": ["Indian Contract Act 1872, Section 55 - Time as essence of contract"],
+    "precedents": [
+      {
+        "case_id": "P003",
+        "case_name": "Startup v Macdonald (1843)",
+        "verdict": "partial_liability",
+        "rationale": "Substantial performance may still entitle contractor to payment minus damages."
+      }
+    ],
+    "evidence_flags": ["contractor_delay_documented", "work_quality_undisputed"],
+    "gold_label_verdict": "liable",
+    "gold_label_reasoning": "Contractor liable for delay damages but entitled to payment for completed work."
+  },
+  {
+    "case_id": "T001",
+    "domain": "tort",
+    "difficulty": "medium",
+    "fact_pattern": "A hospital left a surgical sponge inside a patient during an operation. The patient suffered infection 3 months later. The hospital claims the infection was unrelated.",
+    "applicable_statutes": ["Law of Torts - Negligence", "Consumer Protection Act 2019, Section 2(42)"],
+    "precedents": [
+      {
+        "case_id": "P004",
+        "case_name": "Jacob Mathew v State of Punjab (2005)",
+        "verdict": "liable",
+        "rationale": "Res ipsa loquitur applies in medical negligence cases."
+      },
+      {
+        "case_id": "P005",
+        "case_name": "Spring Meadows Hospital v Harjol Ahluwalia (1998)",
+        "verdict": "liable",
+        "rationale": "Hospital vicariously liable for staff negligence."
+      }
+    ],
+    "evidence_flags": ["conflicting_medical_expert_testimony", "causation_disputed"],
+    "gold_label_verdict": "liable",
+    "gold_label_reasoning": "Res ipsa loquitur — sponge inside patient speaks for itself. Hospital liable."
+  },
+  {
+    "case_id": "T002",
+    "domain": "tort",
+    "difficulty": "medium",
+    "fact_pattern": "A pedestrian jaywalked and was hit by a car travelling 10 km/h over the speed limit. Both parties claim the other is at fault.",
+    "applicable_statutes": ["Motor Vehicles Act 1988, Section 166", "Law of Torts - Contributory Negligence"],
+    "precedents": [
+      {
+        "case_id": "P006",
+        "case_name": "Minu B. Mehta v Balkrishna (1977)",
+        "verdict": "partial_liability",
+        "rationale": "Contributory negligence reduces but does not eliminate liability."
+      }
+    ],
+    "evidence_flags": ["pedestrian_jaywalking_confirmed", "driver_speeding_confirmed", "no_cctv"],
+    "gold_label_verdict": "not_liable",
+    "gold_label_reasoning": "Contributory negligence of pedestrian is primary cause. Driver liability reduced significantly."
+  },
+  {
+    "case_id": "PR001",
+    "domain": "property",
+    "difficulty": "hard",
+    "fact_pattern": "Grandfather died without a will. Three grandchildren claim inheritance. Child A has a registered sale deed from grandfather dated 2018. Child B claims the deed was signed under coercion. Child C claims adverse possession for 15 years.",
+    "applicable_statutes": ["Hindu Succession Act 1956, Section 8", "Transfer of Property Act 1882, Section 53A", "Limitation Act 1963, Section 65"],
+    "precedents": [
+      {
+        "case_id": "P007",
+        "case_name": "Ravinder Kaur Grewal v Manjit Kaur (2019)",
+        "verdict": "adverse_possession_valid",
+        "rationale": "12 years continuous possession can override registered title."
+      },
+      {
+        "case_id": "P008",
+        "case_name": "Vidhyadhar v Manikrao (1999)",
+        "verdict": "sale_deed_valid",
+        "rationale": "Registered sale deed presumed valid unless fraud proven by clear evidence."
+      }
+    ],
+    "evidence_flags": ["coercion_claim_unsubstantiated", "possession_duration_disputed", "conflicting_precedents"],
+    "gold_label_verdict": "liable",
+    "gold_label_reasoning": "Registered sale deed (Child A) presumed valid. Coercion unsubstantiated. Adverse possession claim insufficient without continuous possession proof."
+  }
+]

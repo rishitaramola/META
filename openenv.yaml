@@ -1,0 +1,38 @@
+name: judicial-reasoning-env
+version: 1.0.0
+description: >
+  An RL environment where an LLM agent acts as a judge,
+  reasoning through legal cases to deliver structured verdicts.
+  Covers contract, tort, and property law domains.
+author: Team ALACRITY
+tasks:
+  - id: task1_contract
+    difficulty: easy
+    description: Contract breach dispute resolution
+    reward_range: [0.0, 1.0]
+  - id: task2_tort
+    difficulty: medium
+    description: Tort and negligence case reasoning
+    reward_range: [0.0, 1.0]
+  - id: task3_property
+    difficulty: hard
+    description: Property and inheritance dispute with adversarial facts
+    reward_range: [0.0, 1.0]
+observation_space:
+  type: dict
+  fields:
+    - case_id: string
+    - fact_pattern: string
+    - statutes: list[string]
+    - precedents: list[dict]
+    - evidence_flags: list[string]
+action_space:
+  type: dict
+  fields:
+    - verdict: string
+    - confidence_score: float
+    - reasoning_chain: string
+    - cited_precedents: list[string]
+reward_range: [0.0, 1.0]
+language: python
+framework: gymnasium
