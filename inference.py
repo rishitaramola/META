@@ -1,12 +1,8 @@
 import asyncio
 import os
 import json
-import threading
 import time
 from openai import OpenAI
-from fastapi import FastAPI
-from fastapi.responses import JSONResponse
-import uvicorn
 from environment import JudicialEnv, JudicialAction
 from dotenv import load_dotenv
 
@@ -14,13 +10,13 @@ load_dotenv()
 
 API_BASE_URL = os.environ.get("API_BASE_URL", "https://api.groq.com/openai/v1")
 MODEL_NAME   = os.environ.get("MODEL_NAME", "llama-3.3-70b-versatile")
-HF_TOKEN     = os.environ.get("HF_TOKEN")  # No default — evaluator provides this
+HF_TOKEN     = os.environ.get("HF_TOKEN")          # No default — evaluator provides this
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")  # Local dev fallback only
 
 API_KEY = HF_TOKEN or GROQ_API_KEY
 client = OpenAI(api_key=API_KEY, base_url=API_BASE_URL)
 
-MAX_TOTAL_REWARD = 1.0
+MAX_TOTAL_REWARD       = 1.0
 SUCCESS_SCORE_THRESHOLD = 0.5
 
 TASKS = [
@@ -28,70 +24,6 @@ TASKS = [
     {"name": "task2_tort",     "domain": "tort",     "difficulty": "medium"},
     {"name": "task3_property", "domain": "property", "difficulty": "hard"},
 ]
-
-# Store results globally so API can serve them
-RESULTS = {"status": "starting", "scores": {}, "overall": 0.0}
-
-app = FastAPI(title="Judicial Reasoning RL Environment")
-
-@app.get("/")
-def root():
-    return {
-        "name": "judicial-reasoning-env",
-        "version": "1.0.0",
-        "status": RESULTS["status"],
-        "description": "RL environment where an LLM agent acts as a judge",
-        "team": "Team ALACRITY",
-        "tasks": ["task1_contract", "task2_tort", "task3_property"]
-    }
-
-@app.get("/health")
-def health():
-    return {"status": "ok"}
-
-@app.get("/results")
-def results():
-    return JSONResponse(content=RESULTS)
-
-@app.post("/reset")
-def reset(domain: str = "contract", difficulty: str = "easy"):
-    env = JudicialEnv(domain=domain, difficulty=difficulty)
-    obs, info = env.reset()
-    return obs.model_dump()
-
-@app.get("/state")
-def get_state(domain: str = "contract", difficulty: str = "easy"):
-    env = JudicialEnv(domain=domain, difficulty=difficulty)
-    env.reset()
-    return env.state()
-
-@app.get("/tasks")
-def get_tasks():
-    return {
-        "tasks": [
-            {
-                "id": "task1_contract",
-                "difficulty": "easy",
-                "domain": "contract",
-                "description": "Contract breach and dispute resolution under Indian Contract Act",
-                "expected_baseline": 0.9760
-            },
-            {
-                "id": "task2_tort",
-                "difficulty": "medium",
-                "domain": "tort",
-                "description": "Tort and negligence cases with conflicting evidence",
-                "expected_baseline": 0.6853
-            },
-            {
-                "id": "task3_property",
-                "difficulty": "hard",
-                "domain": "property",
-                "description": "Property and inheritance disputes with adversarial ambiguous facts",
-                "expected_baseline": 0.5520
-            }
-        ]
-    }
 
 
 def log_start(task_name: str):
@@ -105,7 +37,7 @@ def log_end(success: bool, steps: int, score: float, rewards: list):
 
 
 def get_agent_action(obs) -> JudicialAction:
-    """Call LLM to get a structured verdict for the given observation. Retries up to 3 times on JSON parse errors."""
+    """Call LLM to get a structured verdict. Retries up to 3 times on parse errors."""
     prompt = f"""You are an expert judge. Analyze the following legal case and deliver a structured verdict.
 
 FACT PATTERN:
@@ -134,7 +66,7 @@ Respond ONLY with a valid JSON object in this exact format:
             response = client.chat.completions.create(
                 model=MODEL_NAME,
                 messages=[{"role": "user", "content": prompt}],
-                temperature=0.2
+                temperature=0.2,
             )
             raw = response.choices[0].message.content.strip()
             raw = raw.replace("```json", "").replace("```", "").strip()
@@ -143,14 +75,12 @@ Respond ONLY with a valid JSON object in this exact format:
                 verdict=data["verdict"],
                 confidence_score=float(data["confidence_score"]),
                 reasoning_chain=data["reasoning_chain"],
-                cited_precedents=data.get("cited_precedents", [])
+                cited_precedents=data.get("cited_precedents", []),
             )
         except (json.JSONDecodeError, KeyError, ValueError) as e:
             last_error = e
             if attempt < 2:
-                time.sleep(1.5 * (attempt + 1))  # exponential backoff
-            continue
-
+                time.sleep(1.5 * (attempt + 1))
     raise ValueError(f"Failed to parse LLM response after 3 attempts: {last_error}")
 
 
@@ -191,45 +121,17 @@ async def run_task(task_config: dict) -> float:
     return score
 
 
-async def run_all_tasks():
-    global RESULTS
-    RESULTS["status"] = "running"
-    all_scores = {}
-
+async def main() -> None:
+    all_scores = []
     for task in TASKS:
         score = await run_task(task)
-        all_scores[task["name"]] = round(score, 4)
-
-    overall = sum(all_scores.values()) / len(all_scores)
+        all_scores.append(score)
 
     print(f"\n=== BASELINE RESULTS ===", flush=True)
-    for name, score in all_scores.items():
-        print(f"{name}: {score:.4f}", flush=True)
-    print(f"OVERALL AVERAGE: {overall:.4f}", flush=True)
-
-    # Write results to file for persistence
-    results_data = {
-        "status": "complete",
-        "scores": all_scores,
-        "overall": round(overall, 4)
-    }
-    try:
-        with open("results.json", "w") as f:
-            json.dump(results_data, f, indent=2)
-    except Exception:
-        pass
-
-    RESULTS.update(results_data)
-
-
-def run_inference_background():
-    asyncio.run(run_all_tasks())
+    for task, score in zip(TASKS, all_scores):
+        print(f"{task['name']}: {score:.4f}", flush=True)
+    print(f"OVERALL AVERAGE: {sum(all_scores)/len(all_scores):.4f}", flush=True)
 
 
 if __name__ == "__main__":
-    # Start inference in background thread
-    inference_thread = threading.Thread(target=run_inference_background, daemon=True)
-    inference_thread.start()
-
-    # Start FastAPI server — keeps container alive on HF Space port 7860
-    uvicorn.run(app, host="0.0.0.0", port=7860)
+    asyncio.run(main())
