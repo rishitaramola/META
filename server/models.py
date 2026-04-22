@@ -37,3 +37,7 @@ class StateResponse(BaseModel):
 
 class HealthResponse(BaseModel):
     status: str = "ok"
+
+class AIJudgeResponse(BaseModel):
+    action: Dict[str, Any]
+    evaluation: StepResponse

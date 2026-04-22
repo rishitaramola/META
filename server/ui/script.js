@@ -1,11 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
     const taskListEl = document.getElementById('task-list');
-    const mainGrid = document.getElementById('main-grid');
     const emptyState = document.getElementById('empty-state');
+    const triageFlow = document.getElementById('triage-flow');
     const resetBtn = document.getElementById('reset-btn');
-    const submitBtn = document.getElementById('submit-btn');
-    const actionForm = document.getElementById('action-form');
     
+    // Phases
+    const phaseA = document.getElementById('phase-a');
+    const phaseB = document.getElementById('phase-b');
+    const phaseC = document.getElementById('phase-c');
+    
+    // Steps
+    const step1 = document.getElementById('step-1');
+    const step2 = document.getElementById('step-2');
+    const step3 = document.getElementById('step-3');
+    const step4 = document.getElementById('step-4');
+
     // UI Elements for Case Details
     const caseTitleEl = document.getElementById('case-title');
     const caseDiffEl = document.getElementById('case-difficulty');
@@ -13,23 +22,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const evidenceFlagsEl = document.getElementById('evidence-flags');
     const statutesListEl = document.getElementById('statutes-list');
     const precedentsListEl = document.getElementById('precedents-list');
-    const citationOptionsEl = document.getElementById('citation-options');
+    
+    // AI Elements
+    const summonAiBtn = document.getElementById('summon-ai-btn');
+    const aiLoading = document.getElementById('ai-loading');
+    const aiOutput = document.getElementById('ai-output');
     const resultsOverlay = document.getElementById('results-overlay');
+    const decisionMatrix = document.getElementById('decision-matrix');
+
+    // Escalation Modal
+    const escalationModal = document.getElementById('escalation-modal');
     
     // State
     let currentDomain = null;
     let currentDifficulty = null;
-    let currentCaseId = null;
+    let currentCaseData = null;
 
     // Initialize
     fetchTasks();
-
-    // Confidence Slider Sync
-    const confidenceSlider = document.getElementById('confidence');
-    const confidenceVal = document.getElementById('confidence-val');
-    confidenceSlider.addEventListener('input', (e) => {
-        confidenceVal.textContent = parseFloat(e.target.value).toFixed(2);
-    });
 
     async function fetchTasks() {
         try {
@@ -67,19 +77,32 @@ document.addEventListener('DOMContentLoaded', () => {
         currentDomain = domain;
         currentDifficulty = difficulty;
         
-        // UI Reset
+        // Reset Flow
         resetBtn.disabled = true;
         emptyState.style.display = 'none';
-        mainGrid.style.display = 'grid';
-        resultsOverlay.style.display = 'none';
-        actionForm.reset();
-        confidenceVal.textContent = '0.85';
-        confidenceSlider.value = 0.85;
-        submitBtn.disabled = false;
+        triageFlow.style.display = 'block';
         
-        caseTitleEl.textContent = 'Loading Case...';
-        factPatternEl.textContent = 'Loading...';
+        // Reset Phases
+        phaseA.style.display = 'block';
+        phaseB.style.display = 'none';
+        phaseC.style.display = 'none';
+        
+        // Reset Stepper
+        step1.classList.add('active');
+        step2.classList.remove('active');
+        step3.classList.remove('active');
+        step4.classList.remove('active');
 
+        // Reset AI Output
+        aiLoading.style.display = 'none';
+        aiOutput.style.display = 'none';
+        resultsOverlay.style.display = 'none';
+        decisionMatrix.style.display = 'block';
+        summonAiBtn.style.display = 'block';
+        summonAiBtn.disabled = true;
+        
+        caseTitleEl.textContent = 'Loading Case Data...';
+        
         try {
             const res = await fetch('/reset', {
                 method: 'POST',
@@ -87,7 +110,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ domain, difficulty })
             });
             const data = await res.json();
-            renderCase(data.observation);
+            currentCaseData = data.observation;
+            caseTitleEl.textContent = `Case Ready for Triage`;
             resetBtn.disabled = false;
         } catch (err) {
             console.error(err);
@@ -95,11 +119,60 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- Phase A: Triage ---
+    document.querySelectorAll('.triage-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const type = e.currentTarget.dataset.type;
+            const subCatGrid = document.getElementById('sub-cat-grid');
+            subCatGrid.innerHTML = ''; // clear previous
+
+            if (type === 'civil') {
+                const cats = ['Family / Matrimonial', 'Property / Real Estate', 'Breach of Contract', 'Tort / Personal Injury'];
+                cats.forEach(c => {
+                    const b = document.createElement('button');
+                    b.className = 'btn secondary-btn';
+                    b.textContent = c;
+                    b.addEventListener('click', () => proceedToEvidence());
+                    subCatGrid.appendChild(b);
+                });
+            } else {
+                const cats = ['Petty Crime', 'Major Felony', 'White Collar'];
+                cats.forEach(c => {
+                    const b = document.createElement('button');
+                    b.className = 'btn secondary-btn';
+                    b.textContent = c;
+                    b.addEventListener('click', () => proceedToEvidence());
+                    subCatGrid.appendChild(b);
+                });
+            }
+
+            phaseA.style.display = 'none';
+            phaseB.style.display = 'block';
+            step2.classList.add('active');
+        });
+    });
+
+    // Back from Phase B
+    document.getElementById('back-to-a').addEventListener('click', () => {
+        phaseB.style.display = 'none';
+        phaseA.style.display = 'block';
+        step2.classList.remove('active');
+    });
+
+    // --- Phase C: Evidence ---
+    function proceedToEvidence() {
+        phaseB.style.display = 'none';
+        phaseC.style.display = 'grid';
+        step3.classList.add('active');
+        renderCase(currentCaseData);
+        summonAiBtn.disabled = false;
+    }
+
     function renderCase(obs) {
-        currentCaseId = obs.case_id;
-        caseTitleEl.textContent = `Case: ${obs.case_id}`;
+        caseTitleEl.textContent = `Case ID: ${obs.case_id}`;
         caseDiffEl.textContent = obs.difficulty;
         caseDiffEl.className = `badge ${obs.difficulty}`;
+        caseDiffEl.style.display = 'inline-block';
 
         factPatternEl.textContent = obs.fact_pattern;
 
@@ -124,12 +197,9 @@ document.addEventListener('DOMContentLoaded', () => {
             statutesListEl.appendChild(li);
         });
 
-        // Precedents & Citation Options
+        // Precedents
         precedentsListEl.innerHTML = '';
-        citationOptionsEl.innerHTML = '';
-        
-        obs.precedents.forEach((prec, index) => {
-            // Accordion for viewing
+        obs.precedents.forEach((prec) => {
             const item = document.createElement('div');
             item.className = 'accordion-item';
             item.innerHTML = `
@@ -140,91 +210,88 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
             precedentsListEl.appendChild(item);
-
-            // Checkbox for citing
-            const label = document.createElement('label');
-            label.className = 'checkbox-label';
-            label.innerHTML = `
-                <input type="checkbox" name="cited_precedents" value="${prec.case_id}">
-                ${prec.case_id}
-            `;
-            citationOptionsEl.appendChild(label);
         });
-        
-        // Add a "hallucination" trap option for fun (optional, to test RL agent behavior)
-        const trapLabel = document.createElement('label');
-        trapLabel.className = 'checkbox-label';
-        trapLabel.innerHTML = `
-            <input type="checkbox" name="cited_precedents" value="FAKE_999">
-            FAKE_999 (Hallucinated Precedent)
-        `;
-        citationOptionsEl.appendChild(trapLabel);
     }
 
-    actionForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const verdict = document.getElementById('verdict').value;
-        const confidence = parseFloat(document.getElementById('confidence').value);
-        const reasoning = document.getElementById('reasoning').value;
-        
-        const citedElements = document.querySelectorAll('input[name="cited_precedents"]:checked');
-        const cited = Array.from(citedElements).map(el => el.value);
-
-        const action = {
-            verdict: verdict,
-            confidence_score: confidence,
-            reasoning_chain: reasoning,
-            cited_precedents: cited
-        };
-
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Evaluating...';
+    // --- Phase D: AI Resolution ---
+    summonAiBtn.addEventListener('click', async () => {
+        summonAiBtn.style.display = 'none';
+        aiLoading.style.display = 'block';
 
         try {
-            const res = await fetch('/step', {
+            const res = await fetch('/ai_judge', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     domain: currentDomain,
-                    difficulty: currentDifficulty,
-                    action: action
+                    difficulty: currentDifficulty
                 })
             });
+            
+            if (!res.ok) throw new Error("Server returned " + res.status);
             const data = await res.json();
-            showResults(data.info);
+            
+            aiLoading.style.display = 'none';
+            aiOutput.style.display = 'block';
+            step4.classList.add('active');
+            
+            // Populate AI Output
+            document.getElementById('ai-case-id').textContent = currentCaseData.case_id;
+            document.getElementById('ai-verdict').textContent = data.action.verdict;
+            document.getElementById('ai-reasoning-text').textContent = data.action.reasoning_chain;
+            
+            // Save info for later display if accepted
+            window.currentEvaluation = data.evaluation.info;
+            
         } catch (err) {
             console.error(err);
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Submit Verdict';
-            alert('Failed to evaluate verdict.');
+            summonAiBtn.style.display = 'block';
+            aiLoading.style.display = 'none';
+            alert('Failed to summon AI Judge. Ensure your API keys are valid.');
         }
     });
 
-    function showResults(info) {
-        document.getElementById('composite-score').textContent = info.composite_reward.toFixed(2);
-        document.getElementById('score-logic').textContent = info.logic_score.toFixed(2);
-        document.getElementById('score-accuracy').textContent = info.accuracy_score.toFixed(2);
-        document.getElementById('score-fairness').textContent = info.fairness_score.toFixed(2);
-        document.getElementById('score-citation').textContent = info.citation_score.toFixed(2);
-
+    // --- Decision Matrix Actions ---
+    document.getElementById('btn-accept').addEventListener('click', () => {
+        decisionMatrix.style.display = 'none';
+        const info = window.currentEvaluation;
+        if(info) {
+            document.getElementById('composite-score').textContent = info.composite_reward.toFixed(2);
+            document.getElementById('score-logic').textContent = info.logic_score.toFixed(2);
+            document.getElementById('score-accuracy').textContent = info.accuracy_score.toFixed(2);
+            document.getElementById('score-fairness').textContent = info.fairness_score.toFixed(2);
+            document.getElementById('score-citation').textContent = info.citation_score.toFixed(2);
+        }
         resultsOverlay.style.display = 'block';
-        submitBtn.style.display = 'none'; // hide submit
-    }
+    });
 
+    document.getElementById('btn-refine').addEventListener('click', () => {
+        alert("The 'Refine Context' feature is a mock-up for this demo. In a real scenario, this would allow you to upload more evidence.");
+    });
+
+    document.getElementById('btn-escalate').addEventListener('click', () => {
+        escalationModal.style.display = 'flex';
+    });
+
+    // --- Modal Logic ---
+    document.getElementById('btn-cancel-transfer').addEventListener('click', () => {
+        escalationModal.style.display = 'none';
+    });
+
+    document.getElementById('btn-confirm-transfer').addEventListener('click', () => {
+        escalationModal.style.display = 'none';
+        decisionMatrix.style.display = 'none';
+        resultsOverlay.style.display = 'block';
+        resultsOverlay.innerHTML = `
+            <h3 style="color:var(--accent-danger)">Case Escalated</h3>
+            <p style="color:var(--text-secondary)">All documents and AI preliminary findings have been securely forwarded to a human presiding officer.</p>
+        `;
+    });
+
+    // Restart
     resetBtn.addEventListener('click', () => {
         if (currentDomain && currentDifficulty) {
             loadCase(currentDomain, currentDifficulty);
-            submitBtn.style.display = 'block';
-            submitBtn.textContent = 'Submit Verdict';
-        }
-    });
-
-    document.getElementById('next-case-btn').addEventListener('click', () => {
-        if (currentDomain && currentDifficulty) {
-            loadCase(currentDomain, currentDifficulty);
-            submitBtn.style.display = 'block';
-            submitBtn.textContent = 'Submit Verdict';
         }
     });
 });

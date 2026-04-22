@@ -30,7 +30,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from environment import JudicialEnv, JudicialAction
 from server.models import (
     ResetRequest, StepRequest,
-    ResetResponse, StepResponse, StateResponse, HealthResponse
+    ResetResponse, StepResponse, StateResponse, HealthResponse, AIJudgeResponse
 )
 
 load_dotenv()
@@ -48,6 +48,7 @@ TASKS = [
     {"name": "task1_contract", "domain": "contract", "difficulty": "easy"},
     {"name": "task2_tort",     "domain": "tort",     "difficulty": "medium"},
     {"name": "task3_property", "domain": "property", "difficulty": "hard"},
+    {"name": "task4_petty_crime", "domain": "petty_crime", "difficulty": "easy"},
 ]
 
 # Global results store
@@ -115,6 +116,37 @@ def step(request: StepRequest):
     )
 
 
+@app.post("/ai_judge", response_model=AIJudgeResponse)
+def ai_judge(request: ResetRequest):
+    """Generate an AI judgment for the requested domain/difficulty and evaluate it."""
+    env = JudicialEnv(domain=request.domain, difficulty=request.difficulty)
+    obs, _ = env.reset()
+    
+    if not API_KEY:
+        raise ValueError("API_KEY not configured. Cannot summon AI Judge.")
+        
+    client = OpenAI(api_key=API_KEY, base_url=API_BASE_URL)
+    
+    # We have to fetch the agent action here
+    # However get_agent_action is defined below in the file, so we need to ensure it's accessible.
+    # Python resolves functions at call time, so this is fine.
+    action = get_agent_action(obs, client)
+    
+    # Evaluate the action on the current case
+    obs_next, reward, done, truncated, info = env.step(action)
+    
+    return AIJudgeResponse(
+        action=action.model_dump(),
+        evaluation=StepResponse(
+            observation=obs_next.model_dump(),
+            reward=reward,
+            done=done,
+            truncated=truncated,
+            info=info
+        )
+    )
+
+
 @app.get("/state", response_model=StateResponse)
 def get_state(domain: str = "contract", difficulty: str = "easy"):
     """Return current environment state."""
@@ -149,6 +181,13 @@ def get_tasks():
                 "description": "Property and inheritance disputes with adversarial ambiguous facts",
                 "expected_baseline": 0.5520,
             },
+            {
+                "id": "task4_petty_crime",
+                "difficulty": "easy",
+                "domain": "petty_crime",
+                "description": "Petty crimes using BNS and Constitutional law emphasizing restorative justice",
+                "expected_baseline": 0.8500,
+            },
         ]
     }
 
@@ -172,7 +211,10 @@ def log_end(success: bool, steps: int, score: float, rewards: list):
 
 
 def get_agent_action(obs, client: OpenAI) -> JudicialAction:
-    prompt = f"""You are an expert judge. Analyze the following legal case and deliver a structured verdict.
+    prompt = f"""You are an impartial, uncorruptible expert judge. Analyze the following legal case and deliver a structured verdict. 
+You are strictly logical, not driven by money or emotional arguments. 
+You must base your reasoning on the Constitution of India, the Bharatiya Nyaya Sanhita (BNS) for criminal matters, and strictly follow the provided precedents. 
+Where relevant, provide brief comparisons to the US and UK judicial systems.
 
 FACT PATTERN:
 {obs.fact_pattern}
@@ -190,7 +232,7 @@ Respond ONLY with a valid JSON object in this exact format:
 {{
   "verdict": "liable OR not_liable OR guilty OR not_guilty",
   "confidence_score": 0.0 to 1.0,
-  "reasoning_chain": "your step by step reasoning here",
+  "reasoning_chain": "your step by step logical reasoning here, referencing the Constitution, BNS, and US/UK systems if applicable",
   "cited_precedents": ["case_id_1", "case_id_2"]
 }}"""
 

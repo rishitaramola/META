@@ -329,5 +329,48 @@
     "evidence_flags": ["conflicting_medical_testimony", "will_duly_registered", "family_dispute_history"],
     "gold_label_verdict": "not_liable",
     "gold_label_reasoning": "Registered will carries presumption of validity. Conflicting testimony alone is insufficient to overturn. Woman's claim upheld."
+  },
+  {
+    "case_id": "PT001",
+    "domain": "petty_crime",
+    "difficulty": "easy",
+    "fact_pattern": "A young individual was caught stealing an apple from a local fruit vendor. The vendor reported the incident, but the value of the stolen item is negligible. The individual claims extreme hunger and has no prior criminal record.",
+    "applicable_statutes": [
+      "Constitution of India, Article 21 - Right to Life (encompassing right to food)",
+      "Bharatiya Nyaya Sanhita (BNS) 2023, Section 303 - Punishment for theft",
+      "Bharatiya Nyaya Sanhita (BNS) 2023, Section 3 - General Exceptions (Act of a person compelled by necessity)"
+    ],
+    "precedents": [
+      {
+        "case_id": "P021",
+        "case_name": "State v. Ramesh (2024)",
+        "verdict": "not_guilty",
+        "rationale": "Petty theft driven by extreme, immediate starvation may fall under general exceptions if the value is trivial and intent is purely survival."
+      }
+    ],
+    "evidence_flags": ["first_offense", "negligible_value", "motive_starvation"],
+    "gold_label_verdict": "not_guilty",
+    "gold_label_reasoning": "Under BNS principles and Constitutional right to life, stealing a single apple out of extreme hunger with no prior record qualifies for leniency or general exceptions for trivial acts. The focus should be restorative, not punitive."
+  },
+  {
+    "case_id": "PT002",
+    "domain": "petty_crime",
+    "difficulty": "easy",
+    "fact_pattern": "A resident was playing very loud music at 2 AM in a densely populated neighborhood despite multiple warnings from neighbors. The police were called and the resident refused to turn it down, arguing it's his property.",
+    "applicable_statutes": [
+      "Bharatiya Nyaya Sanhita (BNS) 2023, Section 270 - Public nuisance",
+      "Constitution of India, Article 21 - Right to Life (includes right to peaceful sleep)"
+    ],
+    "precedents": [
+      {
+        "case_id": "P022",
+        "case_name": "Noise Pollution (In Re) v. Union of India (2005)",
+        "verdict": "guilty",
+        "rationale": "Right to life under Article 21 includes right to peaceful sleep. Freedom of speech/expression or property rights do not permit public nuisance."
+      }
+    ],
+    "evidence_flags": ["multiple_warnings_ignored", "late_night_disturbance", "police_report_filed"],
+    "gold_label_verdict": "guilty",
+    "gold_label_reasoning": "Under BNS Section 270 and Article 21 precedents, creating severe noise pollution late at night constitutes a public nuisance. The resident's property argument does not override neighbors' right to peaceful sleep."
   }
 ]
