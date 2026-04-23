@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Police Verification Module</title>
+    <link rel="stylesheet" href="/styles.css?v=8">
+    <style>
+        body { background: #0f172a; }
+        .dashboard-header { background: #1e293b; padding: 1rem 2rem; border-bottom: 2px solid var(--info); display: flex; justify-content: space-between; align-items: center; }
+        .evidence-card { background: #1e293b; padding: 1.5rem; border-radius: 8px; margin: 1rem 0; border: 1px solid #334155; }
+        .status-pending { color: #facc15; font-weight: bold; }
+        .status-verified { color: #4ade80; font-weight: bold; }
+        .status-rejected { color: #f87171; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-header">
+        <h2 style="color: white; margin: 0;">🚔 Police Evidence Verification Module</h2>
+        <span style="color: var(--muted);">Officer ID: POL-4921</span>
+    </div>
+
+    <div style="max-width: 800px; margin: 2rem auto; padding: 0 1rem;">
+        <h3>Pending Verifications</h3>
+        
+        <div id="evidence-list">
+            <!-- Simulated Evidence Card for Demo -->
+            <div class="evidence-card" id="ev-1">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                    <strong>Case Ref: JA-2026-04-12944</strong>
+                    <span class="status-pending" id="status-1">⏳ PENDING REVIEW</span>
+                </div>
+                <div style="margin-bottom: 1rem; color: #cbd5e1;">
+                    <p><strong>Uploader Aadhar:</strong> 8374-XXXX-XXXX (Verified)</p>
+                    <p><strong>Files Attached:</strong> accident_scene.jpg, medical_report.pdf</p>
+                    <p><strong>Incident Summary:</strong> Traffic collision involving a minor driving a vehicle.</p>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display:block; margin-bottom:0.5rem; color:var(--muted);">Officer Comments (Required):</label>
+                    <textarea id="comment-1" rows="3" style="width: 100%; padding: 0.5rem; border-radius: 4px; background: #0f172a; border: 1px solid #334155; color: white;" placeholder="Enter verification findings..."></textarea>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button class="btn-gold" style="padding: 0.5rem 1rem;" onclick="verifyEvidence(1, true)">✅ Verify & Approve</button>
+                    <button class="btn-ghost" style="padding: 0.5rem 1rem; color: #f87171; border-color: #f87171;" onclick="verifyEvidence(1, false)">❌ Reject Evidence</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function verifyEvidence(id, approved) {
+            const comments = document.getElementById(`comment-${id}`).value;
+            if (!comments) {
+                alert("Please add officer comments before taking action.");
+                return;
+            }
+
+            // In a real app, this sends a POST to /verify_evidence
+            const statusEl = document.getElementById(`status-${id}`);
+            if (approved) {
+                statusEl.textContent = '✅ VERIFIED';
+                statusEl.className = 'status-verified';
+                alert("Evidence verified. The AI Courtroom flow for the user will now resume.");
+            } else {
+                statusEl.textContent = '❌ REJECTED';
+                statusEl.className = 'status-rejected';
+                alert("Evidence rejected.");
+            }
+
+            // Mock updating the main window
+            window.localStorage.setItem('evidence_verified', approved ? 'true' : 'false');
+            window.localStorage.setItem('police_comments', comments);
+        }
+
+        // Listen for new evidence submissions from the main app
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'new_evidence_submitted') {
+                // In a real app, fetch from backend. Here we just reload or add a mock card.
+                console.log("New evidence received in queue.");
+            }
+        });
+    </script>
+</body>
+</html>

@@ -4,7 +4,9 @@
     "domain": "contract",
     "difficulty": "easy",
     "fact_pattern": "Ramesh agreed to supply 500 kg of wheat to Suresh by March 1st for Rs. 50,000. Ramesh failed to deliver. Suresh had to buy from another supplier at Rs. 65,000.",
-    "applicable_statutes": ["Indian Contract Act 1872, Section 73 - Compensation for loss or damage caused by breach of contract"],
+    "applicable_statutes": [
+      "Indian Contract Act 1872, Section 73 - Compensation for loss or damage caused by breach of contract"
+    ],
     "precedents": [
       {
         "case_id": "P001",
@@ -28,7 +30,9 @@
     "domain": "contract",
     "difficulty": "easy",
     "fact_pattern": "Priya hired a contractor to renovate her shop within 30 days for Rs. 2,00,000. The contractor completed the work in 45 days. Priya refused to pay claiming full breach.",
-    "applicable_statutes": ["Indian Contract Act 1872, Section 55 - Effect of failure to perform at fixed time"],
+    "applicable_statutes": [
+      "Indian Contract Act 1872, Section 55 - Effect of failure to perform at fixed time"
+    ],
     "precedents": [
       {
         "case_id": "P003",
@@ -37,7 +41,10 @@
         "rationale": "Substantial performance may still entitle contractor to payment minus damages for delay."
       }
     ],
-    "evidence_flags": ["contractor_delay_documented", "work_quality_undisputed"],
+    "evidence_flags": [
+      "contractor_delay_documented",
+      "work_quality_undisputed"
+    ],
     "gold_label_verdict": "liable",
     "gold_label_reasoning": "Contractor liable for delay damages but entitled to payment for completed work."
   },
@@ -58,7 +65,10 @@
         "rationale": "Party cancelling contract must compensate for foreseeable losses caused."
       }
     ],
-    "evidence_flags": ["advance_payment_confirmed", "cancellation_notice_documented"],
+    "evidence_flags": [
+      "advance_payment_confirmed",
+      "cancellation_notice_documented"
+    ],
     "gold_label_verdict": "liable",
     "gold_label_reasoning": "Hall owner breached contract. Full advance refund plus consequential damages for alternative venue costs recoverable."
   },
@@ -79,7 +89,10 @@
         "rationale": "Seller without clear title cannot pass title. Buyer entitled to full refund."
       }
     ],
-    "evidence_flags": ["bank_lien_confirmed", "seller_awareness_disputed"],
+    "evidence_flags": [
+      "bank_lien_confirmed",
+      "seller_awareness_disputed"
+    ],
     "gold_label_verdict": "liable",
     "gold_label_reasoning": "Seller had no clear title. Buyer entitled to full refund under Section 14 of Sale of Goods Act."
   },
@@ -100,7 +113,10 @@
         "rationale": "Substantial performance entitles contractor to payment minus cost of making good the defect."
       }
     ],
-    "evidence_flags": ["color_difference_minor", "work_completed_on_time"],
+    "evidence_flags": [
+      "color_difference_minor",
+      "work_completed_on_time"
+    ],
     "gold_label_verdict": "liable",
     "gold_label_reasoning": "Substantial performance achieved. Sunita must pay Rs. 80,000 minus small deduction for color correction cost."
   },
@@ -118,7 +134,7 @@
         "case_id": "P004",
         "case_name": "Jacob Mathew v State of Punjab (2005)",
         "verdict": "liable",
-        "rationale": "Res ipsa loquitur applies in medical negligence — the thing speaks for itself."
+        "rationale": "Res ipsa loquitur applies in medical negligence \u00e2\u20ac\u201d the thing speaks for itself."
       },
       {
         "case_id": "P005",
@@ -127,9 +143,12 @@
         "rationale": "Hospital vicariously liable for staff negligence during treatment."
       }
     ],
-    "evidence_flags": ["conflicting_medical_expert_testimony", "causation_disputed"],
+    "evidence_flags": [
+      "conflicting_medical_expert_testimony",
+      "causation_disputed"
+    ],
     "gold_label_verdict": "liable",
-    "gold_label_reasoning": "Res ipsa loquitur — surgical sponge inside patient speaks for itself. Hospital is liable."
+    "gold_label_reasoning": "Res ipsa loquitur \u00e2\u20ac\u201d surgical sponge inside patient speaks for itself. Hospital is liable."
   },
   {
     "case_id": "T002",
@@ -148,7 +167,11 @@
         "rationale": "Contributory negligence reduces but does not eliminate driver's liability."
       }
     ],
-    "evidence_flags": ["pedestrian_jaywalking_confirmed", "driver_speeding_confirmed", "no_cctv"],
+    "evidence_flags": [
+      "pedestrian_jaywalking_confirmed",
+      "driver_speeding_confirmed",
+      "no_cctv"
+    ],
     "gold_label_verdict": "not_liable",
     "gold_label_reasoning": "Contributory negligence of pedestrian is primary cause. Driver liability significantly reduced. Verdict: not liable for full damages."
   },
@@ -170,7 +193,11 @@
         "rationale": "Driver running red light is primarily negligent. Victim's contributory negligence reduces but does not eliminate liability."
       }
     ],
-    "evidence_flags": ["red_light_violation_confirmed", "no_helmet_confirmed", "cctv_available"],
+    "evidence_flags": [
+      "red_light_violation_confirmed",
+      "no_helmet_confirmed",
+      "cctv_available"
+    ],
     "gold_label_verdict": "liable",
     "gold_label_reasoning": "Driver primarily liable for red light violation. Damages reduced by 25% for contributory negligence due to no helmet."
   },
@@ -198,7 +225,10 @@
         "rationale": "Restaurant liable when customer clearly discloses allergy and staff ignores the warning."
       }
     ],
-    "evidence_flags": ["allergy_disclosure_witnessed", "menu_undisclosed_peanut_ingredients"],
+    "evidence_flags": [
+      "allergy_disclosure_witnessed",
+      "menu_undisclosed_peanut_ingredients"
+    ],
     "gold_label_verdict": "liable",
     "gold_label_reasoning": "Clear duty of care breached after explicit allergy disclosure. Restaurant fully liable for medical damages."
   },
@@ -226,7 +256,11 @@
         "rationale": "Registered sale deed presumed valid unless fraud proven by clear and cogent evidence."
       }
     ],
-    "evidence_flags": ["coercion_claim_unsubstantiated", "possession_duration_disputed", "conflicting_precedents"],
+    "evidence_flags": [
+      "coercion_claim_unsubstantiated",
+      "possession_duration_disputed",
+      "conflicting_precedents"
+    ],
     "gold_label_verdict": "liable",
     "gold_label_reasoning": "Registered sale deed (Child A) presumed valid. Coercion unsubstantiated. Adverse possession claim insufficient without proof of continuous, hostile possession."
   },
@@ -254,7 +288,11 @@
         "rationale": "Improvements by one co-owner entitle them to reimbursement before partition."
       }
     ],
-    "evidence_flags": ["joint_ownership_confirmed", "improvement_receipts_available", "brother_b_never_objected"],
+    "evidence_flags": [
+      "joint_ownership_confirmed",
+      "improvement_receipts_available",
+      "brother_b_never_objected"
+    ],
     "gold_label_verdict": "not_liable",
     "gold_label_reasoning": "Co-owner cannot claim adverse possession. Brother B entitled to 50% but Brother A entitled to reimbursement for improvement costs before partition."
   },
@@ -276,7 +314,11 @@
         "rationale": "Long-term tenant with continuous rent payment record has statutory protected tenancy rights."
       }
     ],
-    "evidence_flags": ["rent_receipts_available", "original_agreement_expired", "heir_claim_documented"],
+    "evidence_flags": [
+      "rent_receipts_available",
+      "original_agreement_expired",
+      "heir_claim_documented"
+    ],
     "gold_label_verdict": "not_liable",
     "gold_label_reasoning": "25 years of continuous tenancy with rent receipts creates statutory protected tenancy. Eviction not valid without proper notice under Rent Control Act."
   },
@@ -298,7 +340,11 @@
         "rationale": "Verbal permissions have no legal standing for construction. Written approval is mandatory under municipal law."
       }
     ],
-    "evidence_flags": ["no_written_permit", "structural_report_pending", "verbal_approval_disputed"],
+    "evidence_flags": [
+      "no_written_permit",
+      "structural_report_pending",
+      "verbal_approval_disputed"
+    ],
     "gold_label_verdict": "liable",
     "gold_label_reasoning": "No written permit exists. Verbal approval has no legal standing. Municipality's demolition order is valid."
   },
@@ -326,51 +372,36 @@
         "rationale": "Registered will carries strong presumption of validity. Burden of proof lies on the contestant."
       }
     ],
-    "evidence_flags": ["conflicting_medical_testimony", "will_duly_registered", "family_dispute_history"],
+    "evidence_flags": [
+      "conflicting_medical_testimony",
+      "will_duly_registered",
+      "family_dispute_history"
+    ],
     "gold_label_verdict": "not_liable",
     "gold_label_reasoning": "Registered will carries presumption of validity. Conflicting testimony alone is insufficient to overturn. Woman's claim upheld."
   },
   {
-    "case_id": "PT001",
+    "case_id": "CRM-001",
     "domain": "petty_crime",
-    "difficulty": "easy",
-    "fact_pattern": "A young individual was caught stealing an apple from a local fruit vendor. The vendor reported the incident, but the value of the stolen item is negligible. The individual claims extreme hunger and has no prior criminal record.",
+    "difficulty": "hard",
+    "fact_pattern": "Traffic collision involving a 17-year-old minor driving a vehicle, resulting in property damage. The minor fled the scene. Video evidence and license plate submitted by victim.",
     "applicable_statutes": [
-      "Constitution of India, Article 21 - Right to Life (encompassing right to food)",
-      "Bharatiya Nyaya Sanhita (BNS) 2023, Section 303 - Punishment for theft",
-      "Bharatiya Nyaya Sanhita (BNS) 2023, Section 3 - General Exceptions (Act of a person compelled by necessity)"
+      "Bharatiya Nyaya Sanhita (BNS) 2023, Section 125 - Act endangering life or personal safety of others",
+      "Motor Vehicles Act 1988, Section 199A - Offences by Juveniles"
     ],
     "precedents": [
       {
-        "case_id": "P021",
-        "case_name": "State v. Ramesh (2024)",
-        "verdict": "not_guilty",
-        "rationale": "Petty theft driven by extreme, immediate starvation may fall under general exceptions if the value is trivial and intent is purely survival."
+        "case_id": "P-BNS-101",
+        "case_name": "State vs. Juvenile Driver (2025)",
+        "verdict": "forward_to_judge",
+        "rationale": "Parents of minor held liable for allowing unauthorized driving. Minor sent to Juvenile Justice Board."
       }
     ],
-    "evidence_flags": ["first_offense", "negligible_value", "motive_starvation"],
-    "gold_label_verdict": "not_guilty",
-    "gold_label_reasoning": "Under BNS principles and Constitutional right to life, stealing a single apple out of extreme hunger with no prior record qualifies for leniency or general exceptions for trivial acts. The focus should be restorative, not punitive."
-  },
-  {
-    "case_id": "PT002",
-    "domain": "petty_crime",
-    "difficulty": "easy",
-    "fact_pattern": "A resident was playing very loud music at 2 AM in a densely populated neighborhood despite multiple warnings from neighbors. The police were called and the resident refused to turn it down, arguing it's his property.",
-    "applicable_statutes": [
-      "Bharatiya Nyaya Sanhita (BNS) 2023, Section 270 - Public nuisance",
-      "Constitution of India, Article 21 - Right to Life (includes right to peaceful sleep)"
+    "evidence_flags": [
+      "video_evidence",
+      "minor_involved",
+      "fled_scene"
     ],
-    "precedents": [
-      {
-        "case_id": "P022",
-        "case_name": "Noise Pollution (In Re) v. Union of India (2005)",
-        "verdict": "guilty",
-        "rationale": "Right to life under Article 21 includes right to peaceful sleep. Freedom of speech/expression or property rights do not permit public nuisance."
-      }
-    ],
-    "evidence_flags": ["multiple_warnings_ignored", "late_night_disturbance", "police_report_filed"],
-    "gold_label_verdict": "guilty",
-    "gold_label_reasoning": "Under BNS Section 270 and Article 21 precedents, creating severe noise pollution late at night constitutes a public nuisance. The resident's property argument does not override neighbors' right to peaceful sleep."
+    "expert_verdict": "forward_to_judge"
   }
 ]

@@ -49,7 +49,7 @@ TASKS = [
     {"name": "task1_contract", "domain": "contract", "difficulty": "easy"},
     {"name": "task2_tort",     "domain": "tort",     "difficulty": "medium"},
     {"name": "task3_property", "domain": "property", "difficulty": "hard"},
-    {"name": "task4_petty_crime", "domain": "petty_crime", "difficulty": "easy"},
+    {"name": "task4_petty_crime", "domain": "petty_crime", "difficulty": "hard"},
 ]
 
 # Global results store
@@ -226,6 +226,11 @@ def get_state(domain: str = "contract", difficulty: str = "easy"):
     return StateResponse(state=env.state())
 
 
+@app.get("/police")
+async def serve_police_dashboard():
+    return FileResponse(os.path.join(ui_dir, "police_dashboard.html"))
+
+
 @app.get("/tasks")
 def get_tasks():
     """List all available tasks with metadata."""
@@ -282,11 +287,16 @@ def log_end(success: bool, steps: int, score: float, rewards: list):
 
 
 def get_agent_action(obs, client: OpenAI) -> JudicialAction:
-    prompt = f"""You are JusticeEngine-01, an impartial AI legal mediator designed to triage cases, analyze evidence, and generate preliminary legal opinions under the Constitution of India and BNS. Your goal is to filter straightforward cases and organize complex ones for human judges.
-You are strictly logical, not driven by money or emotional arguments. 
-You must base your reasoning on the Constitution of India, the Bharatiya Nyaya Sanhita (BNS) for criminal matters, and strictly follow the provided precedents. 
-Where relevant, provide brief comparisons to the US and UK judicial systems.
-
+    is_criminal = obs.domain == "petty_crime"
+    
+    # Define the 3 Personas for the Council of AIs
+    personas = [
+        "The Strict Constitutionalist: You adhere strictly to the letter of the law, constitutional provisions, and precedents.",
+        "The Empathetic Mediator: You focus on restorative justice, equitable outcomes, and the context of the parties involved.",
+        "The Precedent Analyst: You heavily weigh past case outcomes and aim for extreme consistency with previous rulings."
+    ]
+    
+    base_prompt = f"""You are JusticeEngine-01, an AI legal mediator for Indian courts.
 FACT PATTERN:
 {obs.fact_pattern}
 
@@ -298,37 +308,79 @@ PRECEDENTS:
 
 EVIDENCE FLAGS:
 {', '.join(obs.evidence_flags) if obs.evidence_flags else 'None'}
+"""
+    
+    if is_criminal:
+        task_prompt = """
+CRITICAL INSTRUCTION: This is a CRIMINAL case. You MUST NOT pass a final judgment or verdict.
+Your task is to:
+1. Bundle all the facts and evidence logically for a human judge.
+2. Identify if this is a punishable offense strictly under the new Bharatiya Nyaya Sanhita (BNS) or BNSS.
+3. State the potential punishment.
+4. Set the verdict field EXACTLY to "forward_to_judge".
 
-Respond ONLY with a valid JSON object in this exact format:
-{{
-  "verdict": "liable OR not_liable OR guilty OR not_guilty",
+Respond ONLY with a valid JSON object:
+{
+  "verdict": "forward_to_judge",
   "confidence_score": 0.0 to 1.0,
-  "reasoning_chain": "your step by step logical reasoning here, referencing the Constitution, BNS, and US/UK systems if applicable",
+  "reasoning_chain": "Your bundled facts, BNS offense identification, and potential punishment.",
   "cited_precedents": ["case_id_1", "case_id_2"]
-}}"""
+}"""
+    else:
+        task_prompt = """
+CRITICAL INSTRUCTION: This is a CIVIL case. You must analyze the facts and provide a final verdict.
+Base your reasoning on the Constitution of India and strictly follow the precedents.
 
-    last_error = None
-    for attempt in range(3):
-        try:
-            response = client.chat.completions.create(
-                model=MODEL_NAME,
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.2,
-            )
-            raw = response.choices[0].message.content.strip()
-            raw = raw.replace("```json", "").replace("```", "").strip()
-            data = json.loads(raw)
-            return JudicialAction(
-                verdict=data["verdict"],
-                confidence_score=float(data["confidence_score"]),
-                reasoning_chain=data["reasoning_chain"],
-                cited_precedents=data.get("cited_precedents", []),
-            )
-        except (json.JSONDecodeError, KeyError, ValueError) as e:
-            last_error = e
-            if attempt < 2:
-                time.sleep(1.5 * (attempt + 1))
-    raise ValueError(f"Failed to parse LLM response after 3 attempts: {last_error}")
+Respond ONLY with a valid JSON object:
+{
+  "verdict": "liable OR not_liable OR partial_liability",
+  "confidence_score": 0.0 to 1.0,
+  "reasoning_chain": "your step by step logical reasoning here",
+  "cited_precedents": ["case_id_1", "case_id_2"]
+}"""
+
+    votes = []
+    
+    # Get 3 votes from the 3 personas
+    for persona in personas:
+        full_prompt = f"{persona}\n\n{base_prompt}\n\n{task_prompt}"
+        for attempt in range(2):
+            try:
+                response = client.chat.completions.create(
+                    model=MODEL_NAME,
+                    messages=[{"role": "user", "content": full_prompt}],
+                    temperature=0.3,
+                )
+                raw = response.choices[0].message.content.strip()
+                raw = raw.replace("```json", "").replace("```", "").strip()
+                data = json.loads(raw)
+                votes.append(data)
+                break
+            except Exception as e:
+                time.sleep(1)
+                
+    if not votes:
+        raise ValueError("All 3 agents failed to generate a valid response.")
+        
+    # Majority Voting Logic
+    verdict_counts = {}
+    for v in votes:
+        verdict_counts[v["verdict"]] = verdict_counts.get(v["verdict"], 0) + 1
+        
+    majority_verdict = max(verdict_counts, key=verdict_counts.get)
+    
+    # Find the best reasoning chain (the one that matches the majority verdict)
+    winning_vote = next((v for v in votes if v["verdict"] == majority_verdict), votes[0])
+    
+    # Modify reasoning to show it was a majority vote
+    final_reasoning = f"[COUNCIL OF AI MAJORITY VOTE: {verdict_counts[majority_verdict]}/3 AGREED]\n\n" + winning_vote["reasoning_chain"]
+
+    return JudicialAction(
+        verdict=majority_verdict,
+        confidence_score=float(winning_vote.get("confidence_score", 0.8)),
+        reasoning_chain=final_reasoning,
+        cited_precedents=winning_vote.get("cited_precedents", []),
+    )
 
 
 async def run_task(task_config: dict, client: OpenAI) -> float:

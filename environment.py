@@ -48,7 +48,7 @@ class JudicialEnv(gym.Env):
 
     metadata = {"render_modes": ["human"]}
 
-    VALID_VERDICTS = ["liable", "not_liable", "guilty", "not_guilty", "partial_liability"]
+    VALID_VERDICTS = ["liable", "not_liable", "guilty", "not_guilty", "partial_liability", "forward_to_judge"]
 
     def __init__(self, domain: str = None, difficulty: str = None, render_mode: str = None):
         super().__init__()
@@ -62,10 +62,10 @@ class JudicialEnv(gym.Env):
 
         # Gymnasium required spaces (symbolic — LLM agents use Pydantic models directly)
         self.observation_space = spaces.Dict({
-            "case_id": spaces.Text(min_length=1, max_length=10),
-            "fact_pattern": spaces.Text(min_length=1, max_length=2000),
-            "domain": spaces.Text(min_length=1, max_length=20),
-            "difficulty": spaces.Text(min_length=1, max_length=10),
+            "case_id": spaces.Text(max_length=10),
+            "fact_pattern": spaces.Text(max_length=2000),
+            "domain": spaces.Text(max_length=20),
+            "difficulty": spaces.Text(max_length=10),
             "num_precedents": spaces.Discrete(10),
             "num_statutes": spaces.Discrete(10),
             "num_evidence_flags": spaces.Discrete(10),
@@ -75,6 +75,7 @@ class JudicialEnv(gym.Env):
             "verdict": spaces.Discrete(len(self.VALID_VERDICTS)),
             "confidence_score": spaces.Box(low=0.0, high=1.0, shape=(1,), dtype=np.float32),
         })
+
 
     def _load_cases(self):
         data_path = os.path.join(os.path.dirname(__file__), "data", "cases.json")

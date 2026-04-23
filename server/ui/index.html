@@ -61,18 +61,33 @@
     <div id="screen-action" class="screen">
         <div class="court-nav">
             <span class="nav-logo">⚖️ Justice AI</span>
-            <button class="btn-ghost" id="back-to-landing">← Leave</button>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <select id="lang-toggle" class="btn-ghost" style="appearance: auto;">
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी (Hindi)</option>
+                </select>
+                <button class="btn-ghost" id="back-to-landing">← Leave</button>
+            </div>
         </div>
         <div class="screen-inner">
-            <h2 class="screen-title">How can the Court assist you?</h2>
-            <p class="screen-subtitle">Please select the nature of your visit</p>
+            <h2 class="screen-title" data-i18n="action_title">How can the Court assist you?</h2>
+            <p class="screen-subtitle" data-i18n="action_subtitle">Please select the nature of your visit</p>
 
-            <div class="action-cards">
+            <div class="action-cards" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
                 <button class="action-card primary-card" id="btn-file-case">
                     <div class="card-icon">📋</div>
                     <div class="card-body">
-                        <h3>I want to file a case</h3>
-                        <p>Present your matter before the AI Judge for a preliminary legal opinion</p>
+                        <h3 data-i18n="file_case">I want to register a case</h3>
+                        <p data-i18n="file_case_desc">Present your matter before the AI Judge for a legal opinion or triage</p>
+                    </div>
+                    <span class="card-arrow">→</span>
+                </button>
+
+                <button class="action-card info-card" id="btn-demo" style="border-color: var(--info); background: rgba(114, 137, 218, 0.05);">
+                    <div class="card-icon">🧪</div>
+                    <div class="card-body">
+                        <h3 data-i18n="run_demo">Run a Demo Case</h3>
+                        <p data-i18n="run_demo_desc">Automatically run a verified BNS case to demonstrate system capabilities</p>
                     </div>
                     <span class="card-arrow">→</span>
                 </button>
@@ -80,8 +95,8 @@
                 <button class="action-card danger-card" id="btn-withdraw">
                     <div class="card-icon">↩️</div>
                     <div class="card-body">
-                        <h3>Withdraw my case</h3>
-                        <p>Cancel or retract a previously filed matter</p>
+                        <h3 data-i18n="withdraw_case">Withdraw my case</h3>
+                        <p data-i18n="withdraw_desc">Cancel or retract a previously filed matter</p>
                     </div>
                     <span class="card-arrow">→</span>
                 </button>
@@ -186,6 +201,80 @@
             <div id="subcat-grid" class="subcat-grid">
                 <!-- Populated by JS -->
             </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  SCREEN 4.1: KYC & OFFENDER INFO                   -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="screen-kyc" class="screen">
+        <div class="court-nav">
+            <span class="nav-logo">⚖️ Justice AI</span>
+            <button class="btn-ghost" id="back-to-subcat-from-kyc">← Back</button>
+        </div>
+        <div class="screen-inner" style="max-width: 600px;">
+            <h2 class="screen-title" data-i18n="kyc_title">Identity Verification (KYC)</h2>
+            <p class="screen-subtitle" data-i18n="kyc_subtitle">To register a case, we need to verify your identity via DigiLocker.</p>
+
+            <div class="kyc-form">
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label style="display:block; margin-bottom:0.5rem; color:var(--gold);">Aadhar Number (12 digits)</label>
+                    <input type="text" id="aadhar-input" placeholder="XXXX-XXXX-XXXX" style="width: 100%; padding: 0.75rem; border-radius: 6px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white;" maxlength="14">
+                </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label style="display:block; margin-bottom:0.5rem; color:var(--gold);">Phone Number</label>
+                    <input type="text" id="phone-input" placeholder="+91 XXXXX XXXXX" style="width: 100%; padding: 0.75rem; border-radius: 6px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white;">
+                </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label style="display:block; margin-bottom:0.5rem; color:var(--gold);">Are you the victim?</label>
+                    <select id="relation-input" style="width: 100%; padding: 0.75rem; border-radius: 6px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white;">
+                        <option value="victim">Yes, I am the victim</option>
+                        <option value="relative">No, filing for a relative/friend</option>
+                        <option value="witness">No, I am a witness</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 2rem;">
+                    <label style="display:block; margin-bottom:0.5rem; color:var(--gold);">Do you know the offender?</label>
+                    <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 0.5rem;">If known, they will be notified.</p>
+                    <input type="text" id="offender-input" placeholder="Name, License Plate, or Phone (Optional)" style="width: 100%; padding: 0.75rem; border-radius: 6px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white;">
+                </div>
+                
+                <button id="btn-verify-kyc" class="btn-gold" style="width: 100%; justify-content: center;">
+                    Verify & Continue
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  SCREEN 4.2: EVIDENCE UPLOAD                       -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="screen-evidence" class="screen">
+        <div class="court-nav">
+            <span class="nav-logo">⚖️ Justice AI</span>
+            <button class="btn-ghost" id="back-to-kyc">← Back</button>
+        </div>
+        <div class="screen-inner" style="max-width: 600px; text-align: center;">
+            <h2 class="screen-title" data-i18n="evidence_title">Upload Evidence</h2>
+            <p class="screen-subtitle" data-i18n="evidence_subtitle">Provide photos, videos, or PDFs (e.g. Rent Agreement, FIR). Required for Police Verification.</p>
+
+            <div class="upload-box" style="border: 2px dashed var(--border); padding: 3rem; border-radius: 12px; background: rgba(255,255,255,0.02); margin: 2rem 0; cursor: pointer;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📁</div>
+                <h3 style="color: var(--gold); margin-bottom: 0.5rem;">Click to browse or drag files here</h3>
+                <p style="color: var(--muted); font-size: 0.9rem;">Supports JPG, PNG, PDF, MP4, ZIP</p>
+                <input type="file" id="evidence-file" style="display: none;" multiple>
+            </div>
+
+            <div id="upload-status" style="display: none; padding: 1rem; background: rgba(114, 137, 218, 0.1); border: 1px solid var(--info); border-radius: 6px; margin-bottom: 2rem; color: #a4bdfc;">
+                ⏳ Evidence uploaded. Pending Police Verification. (May take up to 24 hrs)
+            </div>
+
+            <button id="btn-submit-evidence" class="btn-gold" style="width: 100%; justify-content: center;">
+                Submit Evidence & Proceed
+            </button>
+            <button id="btn-skip-evidence" class="btn-ghost" style="width: 100%; margin-top: 1rem; border: none;">
+                Skip (No Evidence)
+            </button>
         </div>
     </div>
 

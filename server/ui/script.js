@@ -58,9 +58,57 @@ const QUASI_CATS = [
 document.getElementById('enter-btn').addEventListener('click', () => show('screen-action'));
 document.getElementById('back-to-landing').addEventListener('click', () => show('screen-landing'));
 
+// ─── Language Toggle ──────────────────────────────────
+document.getElementById('lang-toggle').addEventListener('change', (e) => {
+    if (e.target.value === 'hi') {
+        document.querySelector('[data-i18n="action_title"]').textContent = 'न्यायालय आपकी किस प्रकार सहायता कर सकता है?';
+        document.querySelector('[data-i18n="action_subtitle"]').textContent = 'कृपया अपनी यात्रा की प्रकृति चुनें';
+        document.querySelector('[data-i18n="file_case"]').textContent = 'मैं केस दर्ज करना चाहता हूँ';
+        document.querySelector('[data-i18n="file_case_desc"]').textContent = 'प्रारंभिक कानूनी राय के लिए अपना मामला एआई जज के सामने पेश करें';
+        document.querySelector('[data-i18n="run_demo"]').textContent = 'डेमो केस चलाएं';
+        document.querySelector('[data-i18n="run_demo_desc"]').textContent = 'सिस्टम क्षमताओं को प्रदर्शित करने के लिए सत्यापित BNS केस चलाएं';
+        document.querySelector('[data-i18n="withdraw_case"]').textContent = 'मेरा केस वापस लें';
+        document.querySelector('[data-i18n="withdraw_desc"]').textContent = 'पहले से दायर मामले को रद्द करें';
+    } else {
+        document.querySelector('[data-i18n="action_title"]').textContent = 'How can the Court assist you?';
+        document.querySelector('[data-i18n="action_subtitle"]').textContent = 'Please select the nature of your visit';
+        document.querySelector('[data-i18n="file_case"]').textContent = 'I want to register a case';
+        document.querySelector('[data-i18n="file_case_desc"]').textContent = 'Present your matter before the AI Judge for a legal opinion or triage';
+        document.querySelector('[data-i18n="run_demo"]').textContent = 'Run a Demo Case';
+        document.querySelector('[data-i18n="run_demo_desc"]').textContent = 'Automatically run a verified BNS case to demonstrate system capabilities';
+        document.querySelector('[data-i18n="withdraw_case"]').textContent = 'Withdraw my case';
+        document.querySelector('[data-i18n="withdraw_desc"]').textContent = 'Cancel or retract a previously filed matter';
+    }
+});
+
 // ─── Action chooser ───────────────────────────────────
 document.getElementById('btn-file-case').addEventListener('click', () => show('screen-type'));
 document.getElementById('btn-withdraw').addEventListener('click', () => show('screen-withdraw'));
+
+// Demo Mode Auto-runner
+document.getElementById('btn-demo').addEventListener('click', async () => {
+    // Fill KYC
+    document.getElementById('aadhar-input').value = '1234-5678-9012';
+    document.getElementById('phone-input').value = '+91 9876543210';
+    document.getElementById('relation-input').value = 'victim';
+    document.getElementById('offender-input').value = 'DL 4C 1234 (Driver Name Unknown)';
+    
+    // Auto click through
+    show('screen-kyc');
+    await new Promise(r => setTimeout(r, 1000));
+    document.getElementById('btn-verify-kyc').click();
+    
+    await new Promise(r => setTimeout(r, 1000));
+    document.getElementById('upload-status').style.display = 'block';
+    document.getElementById('upload-status').innerHTML = '✅ Evidence verified by Police Module (Demo Override).';
+    await new Promise(r => setTimeout(r, 1500));
+    
+    currentType = 'criminal';
+    currentDomain = 'petty_crime';
+    currentDifficulty = 'hard';
+    loadDossier();
+});
+
 document.getElementById('back-from-withdraw').addEventListener('click', () => show('screen-action'));
 document.getElementById('btn-confirm-withdraw').addEventListener('click', () => {
     alert('Case withdrawal request submitted. Reference number sent to your registered contact.');
@@ -95,11 +143,58 @@ function buildSubcats(cats) {
                 const ok = confirm(`⚠️ IMPORTANT: "${cat.label}" cases are serious. The AI will gather your facts and prepare a preliminary record, but a Human Judge WILL review this case. Do you want to proceed?`);
                 if (!ok) return;
             }
-            loadDossier();
+            show('screen-kyc'); // Go to KYC instead of dossier directly
         });
         grid.appendChild(btn);
     });
 }
+
+// ─── KYC & Evidence Flow ──────────────────────────────
+let kycData = {};
+document.getElementById('back-to-subcat-from-kyc').addEventListener('click', () => show('screen-subcat'));
+document.getElementById('btn-verify-kyc').addEventListener('click', () => {
+    const aadhar = document.getElementById('aadhar-input').value;
+    if (aadhar.length < 12) {
+        alert("Please enter a valid Aadhar number for DigiLocker verification.");
+        return;
+    }
+    
+    // Save KYC Data
+    kycData = {
+        aadhar: aadhar,
+        phone: document.getElementById('phone-input').value,
+        relation: document.getElementById('relation-input').value,
+        offender: document.getElementById('offender-input').value
+    };
+    
+    show('screen-evidence');
+});
+
+document.getElementById('back-to-kyc').addEventListener('click', () => show('screen-kyc'));
+
+// Evidence Upload Simulation
+document.querySelector('.upload-box').addEventListener('click', () => {
+    document.getElementById('evidence-file').click();
+});
+document.getElementById('evidence-file').addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        document.getElementById('upload-status').style.display = 'block';
+    }
+});
+
+document.getElementById('btn-submit-evidence').addEventListener('click', () => {
+    if (!document.getElementById('evidence-file').files.length) {
+        alert("Please select a file or click 'Skip'.");
+        return;
+    }
+    // In a real app, this waits for police verification. For the demo, we simulate a delay or proceed.
+    alert("Evidence submitted to Police Module. For the demo, we will proceed to Fact Finding.");
+    loadDossier();
+});
+
+document.getElementById('btn-skip-evidence').addEventListener('click', () => {
+    loadDossier();
+});
 
 // ─── Load Case & Go to Dossier ────────────────────────
 async function loadDossier() {
@@ -151,13 +246,21 @@ function printLetter(type, data) {
         body = `
             <p>This is to certify that the following case has been <strong>officially registered</strong> with the Justice AI Portal on the date and time indicated below.</p>
             <table>
+                <tr><th colspan="2" style="background:#f1f5f9; padding:0.5rem; text-align:left;">Registration Details</th></tr>
                 <tr><td>Case ID</td><td><strong>${data.caseId}</strong></td></tr>
                 <tr><td>Reference No.</td><td><strong>${refNo}</strong></td></tr>
                 <tr><td>Registered On</td><td><strong>${timestamp}</strong></td></tr>
                 <tr><td>Case Type</td><td><strong>${currentType ? currentType.toUpperCase() : 'N/A'}</strong></td></tr>
-                <tr><td>Status</td><td><strong style="color:#1a5276">REGISTERED — AI Fact-Finding in Progress</strong></td></tr>
+                <tr><th colspan="2" style="background:#f1f5f9; padding:0.5rem; text-align:left;">Petitioner KYC & Offender Info</th></tr>
+                <tr><td>Aadhar (DigiLocker KYC)</td><td><strong>${kycData.aadhar || 'Verified (Internal)'}</strong></td></tr>
+                <tr><td>Contact Phone</td><td><strong>${kycData.phone || 'N/A'}</strong></td></tr>
+                <tr><td>Petitioner Role</td><td><strong>${kycData.relation || 'N/A'}</strong></td></tr>
+                <tr><td>Offender Details</td><td><strong>${kycData.offender || 'Unknown'}</strong></td></tr>
+                <tr><th colspan="2" style="background:#f1f5f9; padding:0.5rem; text-align:left;">Current Status</th></tr>
+                <tr><td>Status</td><td><strong style="color:#1a5276">REGISTERED — AI Fact-Finding / Police Verification in Progress</strong></td></tr>
             </table>
             <p style="margin-top:1.5rem;">This document serves as <strong>official proof of registration</strong>. The timestamp above is tamper-proof and can be cited if any dispute arises regarding when this case was filed.</p>`;
+
     } else if (type === 'resolution') {
         title = 'AI Resolution Certificate';
         stampText = 'RESOLVED BY AI';
@@ -401,7 +504,11 @@ document.getElementById('btn-accept').addEventListener('click', () => {
 
 // ─── Escalate ─────────────────────────────────────────
 document.getElementById('btn-escalate').addEventListener('click', () => {
-    document.getElementById('escalation-modal').style.display = 'flex';
+    // Escalation Penalty Warning
+    const warning = `⚠️ ESCALATION WARNING\n\nYou are requesting to bypass the AI and escalate to a Human Judge.\n\nPlease Note:\nIf this is a frivolous escalation (e.g. your case is completely without merit, or the AI has given a lenient 2-year suggestion while a judge may give 4 years), you may face HARSHER PENALTIES for wasting the court's time.\n\nAre you absolutely sure you want to proceed to a Human Judge?`;
+    if(confirm(warning)) {
+        document.getElementById('escalation-modal').style.display = 'flex';
+    }
 });
 document.getElementById('modal-cancel').addEventListener('click', () => {
     document.getElementById('escalation-modal').style.display = 'none';
