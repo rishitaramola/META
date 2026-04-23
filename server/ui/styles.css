@@ -167,7 +167,55 @@ body {
     transition: all 0.2s ease;
 }
 .subcat-card:hover { border-color: var(--gold); background: var(--gold-dim); transform: translateY(-2px); }
-.subcat-card .sc-icon { font-size: 2rem; margin-bottom: 0.75rem; display: block; }
+.subcat-card.urgent-card {
+    border-color: rgba(239,68,68,0.4);
+    background: rgba(239,68,68,0.06);
+}
+.subcat-card.urgent-card:hover {
+    border-color: rgba(239,68,68,0.8);
+    background: rgba(239,68,68,0.15);
+}
+.urgent-tag {
+    display: block;
+    margin-top: 0.6rem;
+    font-size: 0.7rem;
+    color: #f87171;
+    background: rgba(239,68,68,0.12);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    text-align: center;
+}
+
+/* Overview strip on landing */
+.overview-strip {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    width: 100%;
+}
+.overview-strip h4 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 1rem;
+}
+.overview-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+}
+.ov-chip {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--glass-border);
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+.ov-chip.red { border-color: rgba(239,68,68,0.3); color: #f87171; background: rgba(239,68,68,0.07); }
+
 .subcat-card strong { font-size: 1rem; display: block; margin-bottom: 0.25rem; }
 .subcat-card p { font-size: 0.8rem; color: var(--muted); }
 

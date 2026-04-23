@@ -19,20 +19,27 @@ let chatHistory = [];
 
 // ─── Sub-category data ────────────────────────────────
 const CIVIL_CATS = [
-    { icon: '🏠', label: 'Property / Rent', desc: 'Disputes about land, home, or rent payments', domain: 'property', difficulty: 'medium' },
+    { icon: '🏠', label: 'Property / Rent Dispute', desc: 'Disputes about land, home, or rent payments', domain: 'property', difficulty: 'medium' },
     { icon: '📄', label: 'Breach of Contract', desc: 'Someone did not honour a signed agreement', domain: 'contract', difficulty: 'easy' },
     { icon: '👨‍👩‍👧', label: 'Family / Matrimonial', desc: 'Divorce, custody, adoption or maintenance', domain: 'family', difficulty: 'medium' },
     { icon: '⚠️', label: 'Tort / Personal Injury', desc: 'Someone caused harm through negligence', domain: 'tort', difficulty: 'medium' },
-    { icon: '💼', label: 'Employment Dispute', desc: 'Wrongful termination, salary or workplace issues', domain: 'contract', difficulty: 'easy' },
+    { icon: '💼', label: 'Employment / Workplace', desc: 'Wrongful termination, salary or harassment at work', domain: 'contract', difficulty: 'easy' },
+    { icon: '🏥', label: 'Medical Negligence', desc: 'Harm caused by a doctor, hospital or healthcare provider', domain: 'tort', difficulty: 'hard' },
+    { icon: '🛍️', label: 'Consumer Dispute', desc: 'Defective product, false advertising or poor service', domain: 'contract', difficulty: 'easy' },
     { icon: '🤷', label: 'Other / Not Sure', desc: 'Describe it in your own words to the AI', domain: 'contract', difficulty: 'easy' },
 ];
 const CRIMINAL_CATS = [
-    { icon: '🪙', label: 'Petty Crime', desc: 'Minor offences like trespass or public nuisance', domain: 'petty_crime', difficulty: 'easy' },
-    { icon: '👊', label: 'Assault / Hurt', desc: 'Physical harm caused by another person', domain: 'petty_crime', difficulty: 'medium' },
-    { icon: '💳', label: 'Fraud / Cheating', desc: 'Deception or financial fraud', domain: 'petty_crime', difficulty: 'medium' },
-    { icon: '🏠', label: 'Theft / Robbery', desc: 'Unlawful taking of your property', domain: 'petty_crime', difficulty: 'easy' },
-    { icon: '📱', label: 'Cyber Crime', desc: 'Online harassment, hacking or identity theft', domain: 'petty_crime', difficulty: 'hard' },
-    { icon: '🤷', label: 'Other Offence', desc: 'Describe it — JusticeEngine-01 will categorise', domain: 'petty_crime', difficulty: 'easy' },
+    { icon: '🪙', label: 'Petty Crime', desc: 'Minor offences like trespass or public nuisance (BNS Sec 303)', domain: 'petty_crime', difficulty: 'easy' },
+    { icon: '👊', label: 'Assault / Hurt', desc: 'Physical harm caused by another person (BNS Sec 115-117)', domain: 'petty_crime', difficulty: 'medium' },
+    { icon: '🚨', label: 'Sexual Assault / Rape', desc: 'Offences under BNS Sec 63-70. Emergency protocols apply.', domain: 'petty_crime', difficulty: 'hard', urgent: true },
+    { icon: '💀', label: 'Murder / Culpable Homicide', desc: 'Taking of human life (BNS Sec 101-103). Serious investigation required.', domain: 'petty_crime', difficulty: 'hard', urgent: true },
+    { icon: '🏠', label: 'Domestic Violence', desc: 'Abuse within the home — physical, emotional or financial (Protection of Women from DV Act)', domain: 'petty_crime', difficulty: 'medium', urgent: true },
+    { icon: '🔗', label: 'Kidnapping / Abduction', desc: 'Unlawful confinement or taking of a person (BNS Sec 137-140)', domain: 'petty_crime', difficulty: 'hard', urgent: true },
+    { icon: '💳', label: 'Fraud / Cheating', desc: 'Deception or financial fraud (BNS Sec 316-318)', domain: 'petty_crime', difficulty: 'medium' },
+    { icon: '📱', label: 'Cyber Crime', desc: 'Online harassment, hacking or identity theft (IT Act + BNS)', domain: 'petty_crime', difficulty: 'hard' },
+    { icon: '💊', label: 'Drug / Narcotics Offence', desc: 'Possession or trafficking under NDPS Act', domain: 'petty_crime', difficulty: 'hard' },
+    { icon: '🔪', label: 'Robbery / Dacoity', desc: 'Violent theft or organised robbery (BNS Sec 309-310)', domain: 'petty_crime', difficulty: 'hard', urgent: true },
+    { icon: '🤷', label: 'Other / Not Listed', desc: 'Describe your situation — JusticeEngine-01 will categorise', domain: 'petty_crime', difficulty: 'easy' },
 ];
 
 // ─── Landing ──────────────────────────────────────────
@@ -60,15 +67,20 @@ function buildSubcats(cats) {
     grid.innerHTML = '';
     cats.forEach(cat => {
         const btn = document.createElement('button');
-        btn.className = 'subcat-card';
+        btn.className = 'subcat-card' + (cat.urgent ? ' urgent-card' : '');
         btn.innerHTML = `
             <span class="sc-icon">${cat.icon}</span>
             <strong>${cat.label}</strong>
             <p>${cat.desc}</p>
+            ${cat.urgent ? '<span class="urgent-tag">⚠️ Urgent — Human Judge may be required</span>' : ''}
         `;
         btn.addEventListener('click', () => {
             currentDomain = cat.domain;
             currentDifficulty = cat.difficulty;
+            if (cat.urgent) {
+                const ok = confirm(`⚠️ IMPORTANT: "${cat.label}" cases are serious. The AI will gather your facts and prepare a preliminary record, but a Human Judge WILL review this case. Do you want to proceed?`);
+                if (!ok) return;
+            }
             loadDossier();
         });
         grid.appendChild(btn);
@@ -159,8 +171,8 @@ async function sendUserMessage(text) {
         postAI("I have gathered enough information. You may proceed to generate the AI judgment.");
     }
 
-    // Unlock judgment after 4 messages
-    if (chatHistory.length >= 4) {
+    // Also unlock after 8 exchanges as a fallback
+    if (chatHistory.length >= 8) {
         document.getElementById('generate-btn').disabled = false;
         document.getElementById('generate-hint').textContent = '✅ Dossier ready — you may now generate the judgment';
     }
@@ -172,6 +184,14 @@ function postAI(text) {
     div.innerHTML = `<strong>JusticeEngine-01</strong>${text}`;
     document.getElementById('chat-messages').appendChild(div);
     document.getElementById('chat-messages').scrollTop = 9999;
+    
+    // Detect when AI says dossier is complete
+    if (text.includes('DOSSIER_COMPLETE:')) {
+        const clean = text.replace('DOSSIER_COMPLETE:', '').trim();
+        div.innerHTML = `<strong>JusticeEngine-01</strong>${clean}`;
+        document.getElementById('generate-btn').disabled = false;
+        document.getElementById('generate-hint').textContent = '✅ Dossier ready — you may now generate the judgment';
+    }
 }
 
 function appendMsg(role, text) {

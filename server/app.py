@@ -167,17 +167,54 @@ def judge_js():
 
 @app.post("/chat", response_model=ChatResponse)
 def fact_finding_chat(request: ChatRequest):
-    # Simulate the AI asking 3-5 targeted questions
-    # In a real environment, we'd use the LLM to generate the next question.
-    # We use a simple lightweight response for demo purposes.
-    if len(request.chat_history) == 0:
-        return ChatResponse(response="To help me process this dossier, could you confirm if you have any written documents, such as a contract, lease, or formal complaint?")
-    elif len(request.chat_history) == 2:
-        return ChatResponse(response="Understood. Can you clarify the specific dates these events occurred? The timeline is critical under BNS.")
-    elif len(request.chat_history) >= 4:
-        return ChatResponse(response="Thank you. I have enough information to build the legal dossier. Please proceed to generate the Draft Resolution.")
+    """Real LLM-powered fact-finding chat using Groq/Llama-3.3."""
+    if not API_KEY:
+        # Graceful fallback if no API key
+        return ChatResponse(response="API key not configured. Please add your GROQ_API_KEY to the .env file to enable AI fact-finding.")
+
+    client = OpenAI(api_key=API_KEY, base_url=API_BASE_URL)
+
+    # Build the conversation history for the LLM
+    system_prompt = """You are JusticeEngine-01, an AI legal analyst for Indian courts. 
+Your task is to gather facts about a case through targeted, specific questions. 
+
+Rules:
+- Ask ONE short, specific question per response.
+- Base your questions on the case facts and what the user has already told you.
+- Questions should help clarify: evidence available, timeline of events, witnesses, prior disputes, and any formal complaints filed.
+- Once you have gathered enough facts (after 4-6 exchanges), say EXACTLY: "DOSSIER_COMPLETE: I have gathered sufficient information. You may now generate the AI Judgment."
+- Keep your language simple, clear, and professional — the user may not be legally trained.
+- Do NOT give legal opinions yet. Only gather facts."""
+
+    messages = [{"role": "system", "content": system_prompt}]
     
-    return ChatResponse(response="Could you elaborate on that point slightly more?")
+    # Add case context as the first assistant message
+    messages.append({
+        "role": "assistant",
+        "content": f"I am reviewing your case. Here are the facts on file:\n\n{request.fact_pattern}\n\nTo help me build your complete legal dossier, I need to ask you a few targeted questions."
+    })
+    
+    # Add the conversation history
+    for msg in request.chat_history:
+        role = "assistant" if msg.get("role") == "ai" else "user"
+        messages.append({"role": role, "content": msg.get("content", "")})
+    
+    # Add the latest user message
+    if request.user_message:
+        messages.append({"role": "user", "content": request.user_message})
+
+    try:
+        response = client.chat.completions.create(
+            model=MODEL_NAME,
+            messages=messages,
+            temperature=0.3,
+            max_tokens=200,
+        )
+        reply = response.choices[0].message.content.strip()
+        return ChatResponse(response=reply)
+    except Exception as e:
+        err = str(e)[:80]
+        return ChatResponse(response=f"I encountered an issue connecting to the AI. Please try again. (Error: {err})")
 
 
 
