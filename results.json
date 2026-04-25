@@ -1,10 +1,10 @@
 {
   "status": "complete",
   "scores": {
-    "task1_contract": 0.6474,
-    "task2_tort": 0.562,
-    "task3_property": 0.4808,
-    "task4_petty_crime": 0.8981
+    "task1_contract": 0.7047,
+    "task2_tort": 0.5459,
+    "task3_property": 0.4919,
+    "task4_petty_crime": 0.9483
   },
-  "overall": 0.6471
+  "overall": 0.6727
 }

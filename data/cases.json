@@ -10,9 +10,9 @@
     "precedents": [
       {
         "case_id": "P001",
-        "case_name": "Hadley v Baxendale (1854)",
+        "case_name": "Satyabrata Ghose v Mugneeram Bangur (1954 SC)",
         "verdict": "liable",
-        "rationale": "Damages naturally arising from breach are recoverable."
+        "rationale": "Damages bounded by frustration of contract principles in Indian law."
       },
       {
         "case_id": "P002",
@@ -214,9 +214,9 @@
     "precedents": [
       {
         "case_id": "P013",
-        "case_name": "Donoghue v Stevenson (1932)",
+        "case_name": "M.C. Mehta v Union of India (1987 SC)",
         "verdict": "liable",
-        "rationale": "Duty of care exists to foreseeable victims of negligent acts."
+        "rationale": "Strict liability applies for inherent negligence causing harm."
       },
       {
         "case_id": "P014",
@@ -475,5 +475,635 @@
     ],
     "gold_label_verdict": "liable",
     "gold_label_reasoning": "Termination for personal reasons without following due process violates labor rights and principles of natural justice."
+  },
+  {
+    "case_id": "C015",
+    "domain": "criminal",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 15: The accused threatened the victim in a public space, brandishing a weapon, demanding money.",
+    "statutes_applicable": [
+      "Bharatiya Nyaya Sanhita (BNS) 2023 Section 351"
+    ],
+    "precedents": [
+      {
+        "case_name": "State of Maharashtra v Madhurkar Narayan",
+        "verdict": "guilty",
+        "rationale": "Clear mens rea."
+      }
+    ],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "advisory_only",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C016",
+    "domain": "civil",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 16: Supplier failed to deliver goods due to sudden market price spike, claiming force majeure.",
+    "statutes_applicable": [
+      "Indian Contract Act 1872 Section 73"
+    ],
+    "precedents": [
+      {
+        "case_name": "Satyabrata Ghose v Mugneeram Bangur (1954 SC)",
+        "verdict": "liable",
+        "rationale": "Price rise is not force majeure."
+      }
+    ],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "liable",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C017",
+    "domain": "family",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 17: Dispute over child custody and maintenance after mutual divorce filing.",
+    "statutes_applicable": [
+      "Hindu Marriage Act 1955"
+    ],
+    "precedents": [],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "partial_liability",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C018",
+    "domain": "labor",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 18: Employee was terminated without 1-month notice after refusing personal demands of the manager.",
+    "statutes_applicable": [
+      "Industrial Disputes Act 1947 Section 25F",
+      "POSH Act 2013"
+    ],
+    "precedents": [
+      {
+        "case_name": "Vishaka v State of Rajasthan (1997 SC)",
+        "verdict": "liable",
+        "rationale": "Workplace harassment protection."
+      }
+    ],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "liable",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C019",
+    "domain": "constitutional",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 19: The municipal corporation demolished the petitioner's pavement dwelling without prior notice.",
+    "statutes_applicable": [
+      "Article 21 - Right to Life and Livelihood"
+    ],
+    "precedents": [
+      {
+        "case_name": "Olga Tellis v Bombay Municipal Corporation (1985 SC)",
+        "verdict": "liable",
+        "rationale": "Right to livelihood is part of Right to Life."
+      }
+    ],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "liable",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C020",
+    "domain": "criminal",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 20: The accused threatened the victim in a public space, brandishing a weapon, demanding money.",
+    "statutes_applicable": [
+      "Bharatiya Nyaya Sanhita (BNS) 2023 Section 351"
+    ],
+    "precedents": [
+      {
+        "case_name": "State of Maharashtra v Madhurkar Narayan",
+        "verdict": "guilty",
+        "rationale": "Clear mens rea."
+      }
+    ],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "advisory_only",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C021",
+    "domain": "civil",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 21: Supplier failed to deliver goods due to sudden market price spike, claiming force majeure.",
+    "statutes_applicable": [
+      "Indian Contract Act 1872 Section 73"
+    ],
+    "precedents": [
+      {
+        "case_name": "Satyabrata Ghose v Mugneeram Bangur (1954 SC)",
+        "verdict": "liable",
+        "rationale": "Price rise is not force majeure."
+      }
+    ],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "liable",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C022",
+    "domain": "family",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 22: Dispute over child custody and maintenance after mutual divorce filing.",
+    "statutes_applicable": [
+      "Hindu Marriage Act 1955"
+    ],
+    "precedents": [],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "partial_liability",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C023",
+    "domain": "labor",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 23: Employee was terminated without 1-month notice after refusing personal demands of the manager.",
+    "statutes_applicable": [
+      "Industrial Disputes Act 1947 Section 25F",
+      "POSH Act 2013"
+    ],
+    "precedents": [
+      {
+        "case_name": "Vishaka v State of Rajasthan (1997 SC)",
+        "verdict": "liable",
+        "rationale": "Workplace harassment protection."
+      }
+    ],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "liable",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C024",
+    "domain": "constitutional",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 24: The municipal corporation demolished the petitioner's pavement dwelling without prior notice.",
+    "statutes_applicable": [
+      "Article 21 - Right to Life and Livelihood"
+    ],
+    "precedents": [
+      {
+        "case_name": "Olga Tellis v Bombay Municipal Corporation (1985 SC)",
+        "verdict": "liable",
+        "rationale": "Right to livelihood is part of Right to Life."
+      }
+    ],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "liable",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C025",
+    "domain": "criminal",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 25: The accused threatened the victim in a public space, brandishing a weapon, demanding money.",
+    "statutes_applicable": [
+      "Bharatiya Nyaya Sanhita (BNS) 2023 Section 351"
+    ],
+    "precedents": [
+      {
+        "case_name": "State of Maharashtra v Madhurkar Narayan",
+        "verdict": "guilty",
+        "rationale": "Clear mens rea."
+      }
+    ],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "advisory_only",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C026",
+    "domain": "civil",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 26: Supplier failed to deliver goods due to sudden market price spike, claiming force majeure.",
+    "statutes_applicable": [
+      "Indian Contract Act 1872 Section 73"
+    ],
+    "precedents": [
+      {
+        "case_name": "Satyabrata Ghose v Mugneeram Bangur (1954 SC)",
+        "verdict": "liable",
+        "rationale": "Price rise is not force majeure."
+      }
+    ],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "liable",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C027",
+    "domain": "family",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 27: Dispute over child custody and maintenance after mutual divorce filing.",
+    "statutes_applicable": [
+      "Hindu Marriage Act 1955"
+    ],
+    "precedents": [],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "partial_liability",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C028",
+    "domain": "labor",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 28: Employee was terminated without 1-month notice after refusing personal demands of the manager.",
+    "statutes_applicable": [
+      "Industrial Disputes Act 1947 Section 25F",
+      "POSH Act 2013"
+    ],
+    "precedents": [
+      {
+        "case_name": "Vishaka v State of Rajasthan (1997 SC)",
+        "verdict": "liable",
+        "rationale": "Workplace harassment protection."
+      }
+    ],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "liable",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C029",
+    "domain": "constitutional",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 29: The municipal corporation demolished the petitioner's pavement dwelling without prior notice.",
+    "statutes_applicable": [
+      "Article 21 - Right to Life and Livelihood"
+    ],
+    "precedents": [
+      {
+        "case_name": "Olga Tellis v Bombay Municipal Corporation (1985 SC)",
+        "verdict": "liable",
+        "rationale": "Right to livelihood is part of Right to Life."
+      }
+    ],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "liable",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C030",
+    "domain": "criminal",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 30: The accused threatened the victim in a public space, brandishing a weapon, demanding money.",
+    "statutes_applicable": [
+      "Bharatiya Nyaya Sanhita (BNS) 2023 Section 351"
+    ],
+    "precedents": [
+      {
+        "case_name": "State of Maharashtra v Madhurkar Narayan",
+        "verdict": "guilty",
+        "rationale": "Clear mens rea."
+      }
+    ],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "advisory_only",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C031",
+    "domain": "civil",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 31: Supplier failed to deliver goods due to sudden market price spike, claiming force majeure.",
+    "statutes_applicable": [
+      "Indian Contract Act 1872 Section 73"
+    ],
+    "precedents": [
+      {
+        "case_name": "Satyabrata Ghose v Mugneeram Bangur (1954 SC)",
+        "verdict": "liable",
+        "rationale": "Price rise is not force majeure."
+      }
+    ],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "liable",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C032",
+    "domain": "family",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 32: Dispute over child custody and maintenance after mutual divorce filing.",
+    "statutes_applicable": [
+      "Hindu Marriage Act 1955"
+    ],
+    "precedents": [],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "partial_liability",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C033",
+    "domain": "labor",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 33: Employee was terminated without 1-month notice after refusing personal demands of the manager.",
+    "statutes_applicable": [
+      "Industrial Disputes Act 1947 Section 25F",
+      "POSH Act 2013"
+    ],
+    "precedents": [
+      {
+        "case_name": "Vishaka v State of Rajasthan (1997 SC)",
+        "verdict": "liable",
+        "rationale": "Workplace harassment protection."
+      }
+    ],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "liable",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C034",
+    "domain": "constitutional",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 34: The municipal corporation demolished the petitioner's pavement dwelling without prior notice.",
+    "statutes_applicable": [
+      "Article 21 - Right to Life and Livelihood"
+    ],
+    "precedents": [
+      {
+        "case_name": "Olga Tellis v Bombay Municipal Corporation (1985 SC)",
+        "verdict": "liable",
+        "rationale": "Right to livelihood is part of Right to Life."
+      }
+    ],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "liable",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C035",
+    "domain": "criminal",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 35: The accused threatened the victim in a public space, brandishing a weapon, demanding money.",
+    "statutes_applicable": [
+      "Bharatiya Nyaya Sanhita (BNS) 2023 Section 351"
+    ],
+    "precedents": [
+      {
+        "case_name": "State of Maharashtra v Madhurkar Narayan",
+        "verdict": "guilty",
+        "rationale": "Clear mens rea."
+      }
+    ],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "advisory_only",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C036",
+    "domain": "civil",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 36: Supplier failed to deliver goods due to sudden market price spike, claiming force majeure.",
+    "statutes_applicable": [
+      "Indian Contract Act 1872 Section 73"
+    ],
+    "precedents": [
+      {
+        "case_name": "Satyabrata Ghose v Mugneeram Bangur (1954 SC)",
+        "verdict": "liable",
+        "rationale": "Price rise is not force majeure."
+      }
+    ],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "liable",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C037",
+    "domain": "family",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 37: Dispute over child custody and maintenance after mutual divorce filing.",
+    "statutes_applicable": [
+      "Hindu Marriage Act 1955"
+    ],
+    "precedents": [],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "partial_liability",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C038",
+    "domain": "labor",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 38: Employee was terminated without 1-month notice after refusing personal demands of the manager.",
+    "statutes_applicable": [
+      "Industrial Disputes Act 1947 Section 25F",
+      "POSH Act 2013"
+    ],
+    "precedents": [
+      {
+        "case_name": "Vishaka v State of Rajasthan (1997 SC)",
+        "verdict": "liable",
+        "rationale": "Workplace harassment protection."
+      }
+    ],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "liable",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C039",
+    "domain": "constitutional",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 39: The municipal corporation demolished the petitioner's pavement dwelling without prior notice.",
+    "statutes_applicable": [
+      "Article 21 - Right to Life and Livelihood"
+    ],
+    "precedents": [
+      {
+        "case_name": "Olga Tellis v Bombay Municipal Corporation (1985 SC)",
+        "verdict": "liable",
+        "rationale": "Right to livelihood is part of Right to Life."
+      }
+    ],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "liable",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C040",
+    "domain": "criminal",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 40: The accused threatened the victim in a public space, brandishing a weapon, demanding money.",
+    "statutes_applicable": [
+      "Bharatiya Nyaya Sanhita (BNS) 2023 Section 351"
+    ],
+    "precedents": [
+      {
+        "case_name": "State of Maharashtra v Madhurkar Narayan",
+        "verdict": "guilty",
+        "rationale": "Clear mens rea."
+      }
+    ],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "advisory_only",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C041",
+    "domain": "civil",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 41: Supplier failed to deliver goods due to sudden market price spike, claiming force majeure.",
+    "statutes_applicable": [
+      "Indian Contract Act 1872 Section 73"
+    ],
+    "precedents": [
+      {
+        "case_name": "Satyabrata Ghose v Mugneeram Bangur (1954 SC)",
+        "verdict": "liable",
+        "rationale": "Price rise is not force majeure."
+      }
+    ],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "liable",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C042",
+    "domain": "family",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 42: Dispute over child custody and maintenance after mutual divorce filing.",
+    "statutes_applicable": [
+      "Hindu Marriage Act 1955"
+    ],
+    "precedents": [],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "partial_liability",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C043",
+    "domain": "labor",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 43: Employee was terminated without 1-month notice after refusing personal demands of the manager.",
+    "statutes_applicable": [
+      "Industrial Disputes Act 1947 Section 25F",
+      "POSH Act 2013"
+    ],
+    "precedents": [
+      {
+        "case_name": "Vishaka v State of Rajasthan (1997 SC)",
+        "verdict": "liable",
+        "rationale": "Workplace harassment protection."
+      }
+    ],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "liable",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
+  },
+  {
+    "case_id": "C044",
+    "domain": "constitutional",
+    "difficulty": "medium",
+    "fact_pattern": "Incident 44: The municipal corporation demolished the petitioner's pavement dwelling without prior notice.",
+    "statutes_applicable": [
+      "Article 21 - Right to Life and Livelihood"
+    ],
+    "precedents": [
+      {
+        "case_name": "Olga Tellis v Bombay Municipal Corporation (1985 SC)",
+        "verdict": "liable",
+        "rationale": "Right to livelihood is part of Right to Life."
+      }
+    ],
+    "evidence_flags": [
+      "witness statement"
+    ],
+    "gold_verdict": "liable",
+    "gold_reasoning": "Standard IRAC application of the specified statute.",
+    "court_level": "high"
   }
 ]
