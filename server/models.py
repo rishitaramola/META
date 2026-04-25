@@ -58,7 +58,8 @@ class ChatRequest(BaseModel):
     fact_pattern: str
     user_message: str
     chat_history: List[Dict[str, str]] = []
-    case_type: Optional[str] = "civil"  # civil | criminal
+    case_type: str = "civil"
+    evidence_files: Optional[List[str]] = []  # civil | criminal
 
 class ChatResponse(BaseModel):
     response: str

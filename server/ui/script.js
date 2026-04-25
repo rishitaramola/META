@@ -572,7 +572,8 @@ async function sendUserMessage(text) {
                 fact_pattern: currentCaseData ? currentCaseData.fact_pattern : '',
                 user_message: text,
                 chat_history: chatHistory,
-                case_type: window.__caseType || 'civil'
+                case_type: window.__caseType || 'civil',
+                evidence_files: uploadedFiles.map(f => f.name)
             })
         });
         const data = await res.json();

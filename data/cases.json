@@ -451,5 +451,29 @@
     ],
     "gold_label_verdict": "liable",
     "gold_label_reasoning": "Cancellation without show-cause notice violates natural justice. License must be reinstated pending a fair hearing."
+  },
+  {
+    "case_id": "LAB-001",
+    "domain": "labor",
+    "difficulty": "medium",
+    "fact_pattern": "An employee was terminated without notice after an interpersonal dispute with the manager that was unrelated to work performance.",
+    "applicable_statutes": [
+      "Industrial Disputes Act 1947, Section 2A - Dismissal of an individual workman",
+      "Bharatiya Nyaya Sanhita (BNS) 2023, Section 351 - Criminal intimidation (if applicable)"
+    ],
+    "precedents": [
+      {
+        "case_id": "P-LAB-01",
+        "case_name": "Chandigarh Administration vs. Jagjit Singh (1995)",
+        "verdict": "liable",
+        "rationale": "Termination without valid reason or due process is arbitrary and illegal."
+      }
+    ],
+    "evidence_flags": [
+      "termination_letter",
+      "witness_statement"
+    ],
+    "gold_label_verdict": "liable",
+    "gold_label_reasoning": "Termination for personal reasons without following due process violates labor rights and principles of natural justice."
   }
 ]
