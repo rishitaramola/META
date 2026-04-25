@@ -3,7 +3,7 @@ TRL GRPO Training Script for JusticeEngine-01
 
 Prerequisites (Run on a GPU instance like Google Colab):
 !pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
-!pip install --no-deps xformers trl peft accelerate bitsandbytes
+!pip install --no-deps xformers trl peft accelerate bitsandbytes mergekit llm-blender
 """
 
 import os
