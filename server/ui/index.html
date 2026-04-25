@@ -372,21 +372,41 @@
                         <p id="v-reasoning"></p>
                     </div>
 
+                    <div id="v-ratio-block" class="verdict-analysis" style="display:none; border-top:1px solid var(--border); margin-top:1rem; padding-top:1rem;">
+                        <h4>⚖️ Ratio Decidendi</h4>
+                        <p id="v-ratio" style="font-style:italic; color: #a4bdfc;"></p>
+                    </div>
+
+                    <div id="v-obiter-block" class="verdict-analysis" style="display:none; border-top:1px solid var(--border); margin-top:1rem; padding-top:1rem;">
+                        <h4>📝 Obiter Dicta</h4>
+                        <p id="v-obiter" style="font-style:italic; color: var(--muted);"></p>
+                    </div>
+
                     <div class="verdict-actions">
                         <p class="verdict-action-label">What would you like to do?</p>
                         <button id="btn-accept" class="verdict-btn accept">
                             <span class="vbtn-icon">✅</span>
-                            <div>
-                                <strong>Accept &amp; Close Case</strong>
-                                <p>I accept this resolution. Please finalise and record.</p>
-                            </div>
+                            <div><strong>Accept &amp; Close Case</strong><p>I accept this resolution. Please finalise and record.</p></div>
+                        </button>
+                        <button id="btn-appeal" class="verdict-btn" style="border-color:#f59e0b; background:rgba(245,158,11,0.05);">
+                            <span class="vbtn-icon">📤</span>
+                            <div><strong>Appeal</strong><p>Challenge this judgment. A fresh review will be conducted.</p></div>
+                        </button>
+                        <button id="btn-review" class="verdict-btn" style="border-color:#8b5cf6; background:rgba(139,92,246,0.05);">
+                            <span class="vbtn-icon">🔍</span>
+                            <div><strong>Review Petition</strong><p>Request the AI to review its own judgment for error apparent on the record (CPC Order 47).</p></div>
+                        </button>
+                        <button id="btn-revision" class="verdict-btn" style="border-color:#06b6d4; background:rgba(6,182,212,0.05);">
+                            <span class="vbtn-icon">🔄</span>
+                            <div><strong>Revision</strong><p>Allege an error of jurisdiction or material irregularity.</p></div>
+                        </button>
+                        <button id="btn-reference" class="verdict-btn" style="border-color:#10b981; background:rgba(16,185,129,0.05);">
+                            <span class="vbtn-icon">📋</span>
+                            <div><strong>Reference to Human Judge</strong><p>AI recommends referring a complex question of law to a higher authority (CPC Sec 113).</p></div>
                         </button>
                         <button id="btn-escalate" class="verdict-btn escalate">
                             <span class="vbtn-icon">🧑‍⚖️</span>
-                            <div>
-                                <strong>Request Human Judge</strong>
-                                <p>I am not satisfied. I want a real judge to review this.</p>
-                            </div>
+                            <div><strong>Escalate to Human Judge</strong><p>I am not satisfied. I demand a real judge regardless of AI finding.</p></div>
                         </button>
                     </div>
                 </div>
@@ -400,11 +420,11 @@
                     <button class="btn-ghost mt-2" onclick="location.reload()">← Return to Homepage</button>
                 </div>
 
-                <!-- State E: Escalated -->
+                <!-- State E: Escalated / Appealed -->
                 <div id="escalated-panel" style="display:none;" class="outcome-panel escalated">
                     <div class="outcome-icon">🧑‍⚖️</div>
-                    <h3>Case Forwarded to Human Judge</h3>
-                    <p>Your complete case file and the AI's preliminary analysis have been securely sent to a human presiding officer for review.</p>
+                    <h3 id="escalated-title">Case Forwarded to Human Judge</h3>
+                    <p id="escalated-msg">Your complete case file and the AI's preliminary analysis have been securely sent to a human presiding officer for review.</p>
                     <p style="font-size:0.85rem; color:#94a3b8; margin-top:1rem;">Note: Human review may take longer than AI resolution.</p>
                     <button class="btn-ghost mt-2" onclick="location.reload()">← Return to Homepage</button>
                 </div>

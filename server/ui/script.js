@@ -400,7 +400,8 @@ async function sendUserMessage(text) {
                 case_id: currentCaseData ? currentCaseData.case_id : 'DEMO',
                 fact_pattern: currentCaseData ? currentCaseData.fact_pattern : '',
                 user_message: text,
-                chat_history: chatHistory
+                chat_history: chatHistory,
+                case_type: window.__caseType || 'civil'
             })
         });
         const data = await res.json();
@@ -468,7 +469,20 @@ document.getElementById('generate-btn').addEventListener('click', async () => {
         document.getElementById('v-case-id').textContent = currentCaseData ? currentCaseData.case_id : 'N/A';
         document.getElementById('v-verdict').textContent = data.action.verdict;
         document.getElementById('v-reasoning').textContent = data.action.reasoning_chain;
+
+        // Show ratio decidendi and obiter dicta if present
+        if (data.action.ratio_decidendi) {
+            document.getElementById('v-ratio').textContent = data.action.ratio_decidendi;
+            document.getElementById('v-ratio-block').style.display = 'block';
+        }
+        if (data.action.obiter_dicta) {
+            document.getElementById('v-obiter').textContent = data.action.obiter_dicta;
+            document.getElementById('v-obiter-block').style.display = 'block';
+        }
+
         window.__evalInfo = data.evaluation.info;
+        window.__aiVerdict = data.action.verdict;
+        window.__aiReasoning = data.action.reasoning_chain;
     } catch(e) {
         document.getElementById('ai-thinking').style.display = 'none';
         document.getElementById('chat-panel').style.display = 'block';
@@ -503,12 +517,50 @@ document.getElementById('btn-accept').addEventListener('click', () => {
 });
 
 // ─── Escalate ─────────────────────────────────────────
-document.getElementById('btn-escalate').addEventListener('click', () => {
-    // Escalation Penalty Warning
-    const warning = `⚠️ ESCALATION WARNING\n\nYou are requesting to bypass the AI and escalate to a Human Judge.\n\nPlease Note:\nIf this is a frivolous escalation (e.g. your case is completely without merit, or the AI has given a lenient 2-year suggestion while a judge may give 4 years), you may face HARSHER PENALTIES for wasting the court's time.\n\nAre you absolutely sure you want to proceed to a Human Judge?`;
-    if(confirm(warning)) {
-        document.getElementById('escalation-modal').style.display = 'flex';
-    }
+function doEscalate(appealType) {
+    const verdictSummary = window.__aiVerdict || 'see AI analysis';
+    const warning = `LEGAL WARNING\n\nThe AI Council has analyzed your case and found: "${verdictSummary}".\n\nIf you escalate to a Human Judge despite this finding, and the judge agrees with the AI, you may be subject to:\n  - Additional court costs\n  - Penalties for frivolous escalation (Order XVA, CPC)\n  - A harsher outcome than the AI's lenient finding\n\nThe AI's judgment was based on the Constitution of India and the Bharatiya Nyaya Sanhita. A human judge is not bound to be lenient.\n\nAre you absolutely sure you want to proceed?`;
+    if (!confirm(warning)) return;
+    document.getElementById('escalation-modal').style.display = 'flex';
+    document.getElementById('escalation-modal').dataset.appealType = appealType;
+}
+
+document.getElementById('btn-escalate').addEventListener('click', () => doEscalate('escalate'));
+
+// Appeal
+document.getElementById('btn-appeal')?.addEventListener('click', () => {
+    document.getElementById('escalated-title').textContent = 'Appeal Filed';
+    document.getElementById('escalated-msg').textContent = 'Your appeal has been registered. A fresh review will be conducted under the grounds of appeal.';
+    document.getElementById('verdict-panel').style.display = 'none';
+    document.getElementById('escalated-panel').style.display = 'block';
+    fetch('/escalate', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ case_id: currentCaseData?.case_id||'DEMO', reasons:['appeal'], ai_verdict: window.__aiVerdict||'', ai_reasoning: window.__aiReasoning||'', fact_pattern: currentCaseData?.fact_pattern||'', appeal_type:'appeal' }) });
+});
+
+// Review Petition
+document.getElementById('btn-review')?.addEventListener('click', () => {
+    document.getElementById('escalated-title').textContent = 'Review Petition Filed';
+    document.getElementById('escalated-msg').textContent = 'Your review petition (CPC Order 47) has been accepted. The AI will reconsider this judgment for error apparent on the face of the record.';
+    document.getElementById('verdict-panel').style.display = 'none';
+    document.getElementById('escalated-panel').style.display = 'block';
+    fetch('/escalate', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ case_id: currentCaseData?.case_id||'DEMO', reasons:['review'], ai_verdict: window.__aiVerdict||'', ai_reasoning: window.__aiReasoning||'', fact_pattern: currentCaseData?.fact_pattern||'', appeal_type:'review' }) });
+});
+
+// Revision
+document.getElementById('btn-revision')?.addEventListener('click', () => {
+    document.getElementById('escalated-title').textContent = 'Revision Petition Filed';
+    document.getElementById('escalated-msg').textContent = 'Your revision has been filed alleging an error of jurisdiction or material irregularity. This will be reviewed by a supervisory authority.';
+    document.getElementById('verdict-panel').style.display = 'none';
+    document.getElementById('escalated-panel').style.display = 'block';
+    fetch('/escalate', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ case_id: currentCaseData?.case_id||'DEMO', reasons:['revision'], ai_verdict: window.__aiVerdict||'', ai_reasoning: window.__aiReasoning||'', fact_pattern: currentCaseData?.fact_pattern||'', appeal_type:'revision' }) });
+});
+
+// Reference to Human Judge
+document.getElementById('btn-reference')?.addEventListener('click', () => {
+    document.getElementById('escalated-title').textContent = 'Case Referred to Human Judge';
+    document.getElementById('escalated-msg').textContent = 'The AI has identified a complex question of law. This case is being referred to a Human Judge for an authoritative opinion under CPC Section 113.';
+    document.getElementById('verdict-panel').style.display = 'none';
+    document.getElementById('escalated-panel').style.display = 'block';
+    fetch('/escalate', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ case_id: currentCaseData?.case_id||'DEMO', reasons:['reference'], ai_verdict: window.__aiVerdict||'', ai_reasoning: window.__aiReasoning||'', fact_pattern: currentCaseData?.fact_pattern||'', appeal_type:'reference' }) });
 });
 document.getElementById('modal-cancel').addEventListener('click', () => {
     document.getElementById('escalation-modal').style.display = 'none';
