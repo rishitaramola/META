@@ -779,9 +779,9 @@ document.getElementById('generate-btn').addEventListener('click', async () => {
         cardsEl.innerHTML = '';
         
         const mockAgents = [
-            { name: "Precedent Analyst", model: "llama-3.3-70b", verdict: mockVerdict, confidence: 0.96, statutes: "Sec 73 / BNS", argument: "Based on the facts: " + summarySnippet + " This requires formal resolution. Statutory elements are met." },
-            { name: "Constitutional Scholar", model: "mixtral-8x7b", verdict: mockVerdict, confidence: 0.94, statutes: "Art 21", argument: "Rights are clearly implicated by the actions described in the case summary." },
-            { name: "Legal Realist", model: "gemma2-9b", verdict: mockVerdict, confidence: 0.92, statutes: "Practical Justice", argument: "Practical justice demands intervention here based on the grievance described." }
+            { name: "Precedent Analyst", model: "DeepSeek-R1", verdict: mockVerdict, confidence: 0.96, statutes: "Sec 73 / BNS", argument: "Based on the facts: " + summarySnippet + " This requires formal resolution. Statutory elements are met." },
+            { name: "Constitutional Scholar", model: "Claude-3.5 Sonnet", verdict: mockVerdict, confidence: 0.94, statutes: "Art 21", argument: "Rights are clearly implicated by the actions described in the case summary." },
+            { name: "Legal Realist", model: "Perplexity Pro", verdict: mockVerdict, confidence: 0.92, statutes: "Practical Justice", argument: "Practical justice demands intervention here based on the grievance described." }
         ];
 
         mockAgents.forEach(agent => {

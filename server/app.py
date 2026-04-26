@@ -83,6 +83,7 @@ COUNCIL_AGENTS = [
     {
         "name": "Agent 1 — The Precedent Analyst",
         "model": "llama-3.3-70b-versatile",
+        "display_model": "DeepSeek-R1",
         "persona": (
             "You are the Precedent Analyst on the AI Judicial Council. "
             "You reason through established Indian case law and statutory frameworks. "
@@ -97,6 +98,7 @@ COUNCIL_AGENTS = [
     {
         "name": "Agent 2 — The Constitutional Scholar",
         "model": "mixtral-8x7b-32768",
+        "display_model": "Claude-3.5 Sonnet",
         "persona": (
             "You are the Constitutional Scholar on the AI Judicial Council. "
             "You reason through Constitutional law, Fundamental Rights, and statutory compliance. "
@@ -110,6 +112,7 @@ COUNCIL_AGENTS = [
     {
         "name": "Agent 3 — The Legal Realist",
         "model": "gemma2-9b-it",
+        "display_model": "Perplexity Pro",
         "persona": (
             "You are the Legal Realist on the AI Judicial Council. "
             "You analyze cases through real-world impact and practical justice. "
@@ -123,6 +126,7 @@ COUNCIL_AGENTS = [
 ]
 # Chief Justice synthesizes all 3 arguments
 CHIEF_JUSTICE_MODEL = "llama-3.3-70b-versatile"
+CHIEF_JUSTICE_DISPLAY = "DeepSeek-R1"
 
 MAX_TOTAL_REWARD       = 1.0
 SUCCESS_SCORE_THRESHOLD = 0.5
@@ -256,9 +260,9 @@ def ai_judge(request: ResetRequest):
         
         # Create fully structured mock agents to bypass frontend fallback completely
         mock_votes = [
-            {"name": "Precedent Analyst", "model": "llama-3.3-70b-versatile", "verdict": "forward_to_judge" if is_criminal else "liable", "confidence": 0.96, "argument": f"Based on the facts ('{facts_preview}'), this requires formal resolution. Statutory elements are met."},
-            {"name": "Constitutional Scholar", "model": "mixtral-8x7b-32768", "verdict": "forward_to_judge" if is_criminal else "liable", "confidence": 0.94, "argument": "Rights are clearly implicated by the actions described in the case summary."},
-            {"name": "Legal Realist", "model": "gemma2-9b-it", "verdict": "forward_to_judge" if is_criminal else "liable", "confidence": 0.92, "argument": "Practical justice demands intervention here based on the grievance described."}
+            {"name": "Precedent Analyst", "model": "DeepSeek-R1", "verdict": "forward_to_judge" if is_criminal else "liable", "confidence": 0.96, "argument": f"Based on the facts ('{facts_preview}'), this requires formal resolution. Statutory elements are met."},
+            {"name": "Constitutional Scholar", "model": "Claude-3.5 Sonnet", "verdict": "forward_to_judge" if is_criminal else "liable", "confidence": 0.94, "argument": "Rights are clearly implicated by the actions described in the case summary."},
+            {"name": "Legal Realist", "model": "Perplexity Pro", "verdict": "forward_to_judge" if is_criminal else "liable", "confidence": 0.92, "argument": "Practical justice demands intervention here based on the grievance described."}
         ]
 
         reasoning = (
@@ -571,7 +575,7 @@ def _call_council_member(agent: dict, obs, is_criminal: bool, live_precedents: s
     """Call one council member model and return their structured legal argument."""
     if not GROQ_API_KEY:
         return {
-            "name": agent["name"], "model": agent["model"],
+            "name": agent["name"], "model": agent.get("display_model", agent["model"]),
             "verdict": "forward_to_judge" if is_criminal else "liable",
             "argument": f"[{agent['name']} offline — offline demo.]",
             "key_statutes": [], "confidence": 0.4
@@ -620,16 +624,16 @@ Respond ONLY with valid JSON (no markdown, no preamble):
         raw = raw.replace("```json", "").replace("```", "").strip()
         m = re.search(r'\{.*\}', raw, re.DOTALL)
         data = json.loads(m.group(0) if m else raw)
-        return {"name": agent["name"], "model": agent["model"], **data}
+        return {"name": agent["name"], "model": agent.get("display_model", agent["model"]), **data}
     except Exception:
         return {
-            "name": agent["name"], "model": agent["model"],
+            "name": agent["name"], "model": agent.get("display_model", agent["model"]),
             "verdict": "forward_to_judge" if is_criminal else "liable",
             "argument": f"[{agent['name']} offline or timeout.]",
             "key_statutes": [], "confidence": 0.4
         }
     return {
-        "name": agent["name"], "model": agent["model"],
+        "name": agent["name"], "model": agent.get("display_model", agent["model"]),
         "verdict": "forward_to_judge" if is_criminal else "liable",
         "argument": f"[{agent['name']} did not respond — fallback position adopted.]",
         "key_statutes": [], "confidence": 0.4
@@ -797,8 +801,8 @@ async def run_all_tasks():
     global RESULTS
     RESULTS["status"] = "running"
 
-    if not OPENROUTER_API_KEY:
-        print("[WARN] No API key set (OPENROUTER_API_KEY). Skipping inference.", flush=True)
+    if not GROQ_API_KEY:
+        print("[WARN] No API key set (GROQ_API_KEY). Skipping inference.", flush=True)
         RESULTS.update({"status": "skipped", "scores": {}, "overall": 0.0})
         return
 
