@@ -11,8 +11,8 @@ Run on Google Colab (T4 GPU minimum, A100 recommended):
   !pip install wandb datasets huggingface_hub gymnasium pydantic
 
   # Step 2: Clone and run
-  !git clone https://github.com/rishitaramola/META.git
-  %cd META
+  !git clone https://github.com/rishitaramola/judicial-reasoning-env.git
+  %cd judicial-reasoning-env
   !python train.py
 
 RLVR Reward Components (3 independent verifiable reward functions):
