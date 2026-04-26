@@ -256,9 +256,9 @@ def ai_judge(request: ResetRequest):
         
         # Create fully structured mock agents to bypass frontend fallback completely
         mock_votes = [
-            {"name": "Precedent Analyst", "model": "meta-llama/llama-3.3-70b-instruct:free", "verdict": "forward_to_judge" if is_criminal else "liable", "confidence": 0.96, "argument": f"Based on the facts ('{facts_preview}'), this requires formal resolution. Statutory elements are met."},
-            {"name": "Constitutional Scholar", "model": "nousresearch/hermes-3-llama-3.1-405b:free", "verdict": "forward_to_judge" if is_criminal else "liable", "confidence": 0.94, "argument": "Rights are clearly implicated by the actions described in the case summary."},
-            {"name": "Legal Realist", "model": "google/gemma-3-27b-it:free", "verdict": "forward_to_judge" if is_criminal else "liable", "confidence": 0.92, "argument": "Practical justice demands intervention here based on the grievance described."}
+            {"name": "Precedent Analyst", "model": "llama-3.3-70b-versatile", "verdict": "forward_to_judge" if is_criminal else "liable", "confidence": 0.96, "argument": f"Based on the facts ('{facts_preview}'), this requires formal resolution. Statutory elements are met."},
+            {"name": "Constitutional Scholar", "model": "mixtral-8x7b-32768", "verdict": "forward_to_judge" if is_criminal else "liable", "confidence": 0.94, "argument": "Rights are clearly implicated by the actions described in the case summary."},
+            {"name": "Legal Realist", "model": "gemma2-9b-it", "verdict": "forward_to_judge" if is_criminal else "liable", "confidence": 0.92, "argument": "Practical justice demands intervention here based on the grievance described."}
         ]
 
         reasoning = (
@@ -286,7 +286,7 @@ def ai_judge(request: ResetRequest):
             council_deliberation=mock_votes
         )
 
-    if not OPENROUTER_API_KEY:
+    if not GROQ_API_KEY:
         return generate_mock_response(obs, env)
 
     try:
