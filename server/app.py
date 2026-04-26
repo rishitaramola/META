@@ -41,12 +41,12 @@ load_dotenv()
 
 # ─── Configuration ────────────────────────────────────────────
 
-OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
 
-if OPENROUTER_API_KEY:
-    print(f"OK: OpenRouter multi-agent council active")
+if GROQ_API_KEY:
+    print(f"OK: Groq multi-agent council active")
 else:
-    print("WARNING: No OpenRouter API key. AI Judge will use offline demo mode.")
+    print("WARNING: No Groq API key. AI Judge will use offline demo mode.")
 
 CRIMINAL_DOMAINS = [
     "murder", "culpable_homicide", "assault", "hurt", 
@@ -82,7 +82,7 @@ PRS_SEARCH       = "https://prsindia.org/billtrack?q="
 COUNCIL_AGENTS = [
     {
         "name": "Agent 1 — The Precedent Analyst",
-        "model": "meta-llama/llama-3.3-70b-instruct:free",
+        "model": "llama-3.3-70b-versatile",
         "persona": (
             "You are the Precedent Analyst on the AI Judicial Council. "
             "You reason through established Indian case law and statutory frameworks. "
@@ -96,7 +96,7 @@ COUNCIL_AGENTS = [
     },
     {
         "name": "Agent 2 — The Constitutional Scholar",
-        "model": "nousresearch/hermes-3-llama-3.1-405b:free",
+        "model": "mixtral-8x7b-32768",
         "persona": (
             "You are the Constitutional Scholar on the AI Judicial Council. "
             "You reason through Constitutional law, Fundamental Rights, and statutory compliance. "
@@ -109,7 +109,7 @@ COUNCIL_AGENTS = [
     },
     {
         "name": "Agent 3 — The Legal Realist",
-        "model": "google/gemma-3-27b-it:free",
+        "model": "gemma2-9b-it",
         "persona": (
             "You are the Legal Realist on the AI Judicial Council. "
             "You analyze cases through real-world impact and practical justice. "
@@ -122,7 +122,7 @@ COUNCIL_AGENTS = [
     }
 ]
 # Chief Justice synthesizes all 3 arguments
-CHIEF_JUSTICE_MODEL = "qwen/qwen3-next-80b-a3b-instruct:free"
+CHIEF_JUSTICE_MODEL = "llama-3.3-70b-versatile"
 
 MAX_TOTAL_REWARD       = 1.0
 SUCCESS_SCORE_THRESHOLD = 0.5
@@ -372,13 +372,13 @@ def fact_finding_chat(request: ChatRequest):
         else:
             return "DOSSIER_COMPLETE: I have gathered sufficient information. You may now generate the AI Judgment."
 
-    if not OPENROUTER_API_KEY:
+    if not GROQ_API_KEY:
         # Smart offline fallback for demo purposes when no API key is provided
         time.sleep(1.5)  # Simulate network latency
         return ChatResponse(response=get_fallback_response(len(request.chat_history)))
 
     from openai import OpenAI
-    client = OpenAI(api_key=OPENROUTER_API_KEY, base_url="https://openrouter.ai/api/v1")
+    client = OpenAI(api_key=GROQ_API_KEY, base_url="https://api.groq.com/openai/v1")
 
     is_criminal = request.case_type == "criminal"
 
@@ -423,7 +423,7 @@ Rules:
 
     try:
         response = client.chat.completions.create(
-            model="google/gemma-3-27b-it:free", # Using reliable free model
+            model="llama-3.3-70b-versatile", # Using reliable free model
             messages=messages,
             temperature=0.3,
             max_tokens=250,
@@ -531,15 +531,13 @@ def _fetch_indian_kanoon_precedents(query: str, max_results: int = 3) -> str:
         print(f"IK fetch failed (non-critical): {ex}")
         return ""
 
-def _call_openrouter(prompt: str, model: str, retries: int = 3) -> str:
-    if not OPENROUTER_API_KEY:
-        raise Exception("No OPENROUTER_API_KEY set.")
+def _call_groq(prompt: str, model: str, retries: int = 3) -> str:
+    if not GROQ_API_KEY:
+        raise Exception("No GROQ_API_KEY set.")
         
     headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://huggingface.co/spaces/RishitaRamola42/judicial-reasoning-env",
-        "X-Title": "Justice AI - Team ALACRITY"
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json"
     }
     
     body = {
@@ -552,7 +550,7 @@ def _call_openrouter(prompt: str, model: str, retries: int = 3) -> str:
     for attempt in range(retries):
         try:
             response = requests.post(
-                "https://openrouter.ai/api/v1/chat/completions",
+                "https://api.groq.com/openai/v1/chat/completions",
                 headers=headers,
                 json=body,
                 timeout=30
@@ -560,12 +558,7 @@ def _call_openrouter(prompt: str, model: str, retries: int = 3) -> str:
             data = response.json()
             if "error" in data:
                 err_msg = data["error"].get("message", "Unknown error")
-                if "429" in str(data.get("error", {}).get("code", "")) or "rate-limited" in err_msg.lower():
-                    # If rate limited, instantly switch to a fallback model instead of sleeping
-                    body["model"] = "google/gemma-3-27b-it:free"
-                    continue
-                else:
-                    raise Exception(f"OpenRouter API Error: {err_msg}")
+                raise Exception(f"Groq API Error: {err_msg}")
             return data["choices"][0]["message"]["content"]
         except Exception as e:
             if attempt < retries - 1:
@@ -576,7 +569,7 @@ def _call_openrouter(prompt: str, model: str, retries: int = 3) -> str:
 
 def _call_council_member(agent: dict, obs, is_criminal: bool, live_precedents: str = "") -> dict:
     """Call one council member model and return their structured legal argument."""
-    if not OPENROUTER_API_KEY:
+    if not GROQ_API_KEY:
         return {
             "name": agent["name"], "model": agent["model"],
             "verdict": "forward_to_judge" if is_criminal else "liable",
@@ -622,7 +615,7 @@ Respond ONLY with valid JSON (no markdown, no preamble):
   "confidence": 0.0
 }}"""
     try:
-        raw = _call_openrouter(prompt, agent["model"])
+        raw = _call_groq(prompt, agent["model"])
         raw = re.sub(r'<think>.*?</think>', '', raw, flags=re.DOTALL).strip()
         raw = raw.replace("```json", "").replace("```", "").strip()
         m = re.search(r'\{.*\}', raw, re.DOTALL)
@@ -645,7 +638,7 @@ Respond ONLY with valid JSON (no markdown, no preamble):
 
 def _synthesize_verdict(council_votes: list, obs, is_criminal: bool) -> dict:
     """Chief Justice synthesizes all 3 arguments and delivers the final verdict."""
-    if not OPENROUTER_API_KEY:
+    if not GROQ_API_KEY:
         return {
             "verdict": "forward_to_judge" if is_criminal else "liable",
             "confidence_score": 0.8,
@@ -701,7 +694,7 @@ Respond ONLY with valid JSON:
   "obiter_dicta": "Recommended next steps: Whether to approach Internal Committee (POSH), Labour Court (IDA 1947), or Civil Court. Any additional observations."
 }}"""
     try:
-        raw = _call_openrouter(synthesis_prompt, CHIEF_JUSTICE_MODEL)
+        raw = _call_groq(synthesis_prompt, CHIEF_JUSTICE_MODEL)
         raw = re.sub(r'<think>.*?</think>', '', raw, flags=re.DOTALL).strip()
         raw = raw.replace("```json", "").replace("```", "").strip()
         m = re.search(r'\{.*\}', raw, re.DOTALL)
