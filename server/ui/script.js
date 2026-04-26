@@ -506,22 +506,23 @@ function printLetter(type, data) {
     </body>
     </html>`;
 
-    // Try to open it immediately, but it might be blocked by popup blockers
-    try {
-        const win = window.open('', '_blank', 'width=800,height=700');
-        if (win) {
-            win.document.write(htmlContent);
-            win.document.close();
+    // Use a Blob URL to avoid about:blank issues in iframes
+    const openPdf = () => {
+        try {
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+        } catch(e) {
+            console.error("Popup blocked or Blob URL failed", e);
         }
-    } catch(e) {}
+    };
+
+    // Try to open it immediately, but it might be blocked by popup blockers
+    openPdf();
 
     // ALWAYS append a button to the chat so the user can open it manually if blocked
     const btnId = 'pdf-btn-' + Date.now();
-    window[btnId] = function() {
-        const win = window.open('', '_blank', 'width=800,height=700');
-        win.document.write(htmlContent);
-        win.document.close();
-    };
+    window[btnId] = openPdf;
 
     postAI(`📜 **${title} generated.**\n\n<button onclick="window['${btnId}']()" style="margin-top:0.5rem; padding:0.6rem 1.2rem; background:var(--gold); color:#000; border:none; border-radius:6px; font-weight:700; cursor:pointer;">📄 Open PDF Certificate</button>`);
 }
@@ -577,7 +578,7 @@ async function sendUserMessage(text) {
         postAI(data.response);
         chatHistory.push({ role: 'ai', content: data.response });
     } catch(e) {
-        postAI("I have gathered enough information. You may proceed to generate the AI judgment.");
+        postAI("DOSSIER_COMPLETE: I have gathered enough information. You may proceed to generate the AI judgment.");
     }
 
     // Also unlock after 8 exchanges as a fallback

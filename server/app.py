@@ -250,7 +250,7 @@ def ai_judge(request: ResetRequest):
         env.current_case["expert_verdict"] = env.current_case["gold_label_verdict"]
         env.current_case["precedents"] = []
 
-    if not API_KEY:
+    if not OPENROUTER_API_KEY:
         # ─── Offline Demo Mode ─────────────────────────────────────────────────
         # Returns a realistic mock judgment using the user's actual facts when offline.
         is_criminal = obs.domain == "petty_crime"
@@ -354,12 +354,13 @@ def fact_finding_chat(request: ChatRequest):
         else:
             return "DOSSIER_COMPLETE: I have gathered sufficient information. You may now generate the AI Judgment."
 
-    if not API_KEY:
+    if not OPENROUTER_API_KEY:
         # Smart offline fallback for demo purposes when no API key is provided
         time.sleep(1.5)  # Simulate network latency
         return ChatResponse(response=get_fallback_response(len(request.chat_history)))
 
-    client = OpenAI(api_key=API_KEY, base_url=API_BASE_URL)
+    from openai import OpenAI
+    client = OpenAI(api_key=OPENROUTER_API_KEY, base_url="https://openrouter.ai/api/v1")
 
     is_criminal = request.case_type == "criminal"
 
@@ -404,7 +405,7 @@ Rules:
 
     try:
         response = client.chat.completions.create(
-            model=CHAT_MODEL,
+            model="meta-llama/llama-3.3-70b-instruct:free",
             messages=messages,
             temperature=0.3,
             max_tokens=250,
