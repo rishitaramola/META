@@ -2,30 +2,92 @@ document.addEventListener('DOMContentLoaded', async () => {
     const listEl = document.getElementById('escalated-list');
     const countEl = document.getElementById('pending-count');
 
+    // Modal elements
+    const modal = document.getElementById('review-modal');
+    const modalCaseId = document.getElementById('modal-case-id');
+    const modalComments = document.getElementById('judge-comments');
+    const btnCancel = document.getElementById('modal-cancel-btn');
+    const btnSubmit = document.getElementById('modal-submit-btn');
+
+    let currentReviewingCaseId = null;
+
+    btnCancel.addEventListener('click', () => {
+        modal.style.display = 'none';
+        modalComments.value = '';
+        currentReviewingCaseId = null;
+    });
+
+    btnSubmit.addEventListener('click', () => {
+        if (!modalComments.value.trim()) {
+            alert('Please add a comment before submitting.');
+            return;
+        }
+        
+        // Mock submission to backend
+        console.log(\`Submitting review for \${currentReviewingCaseId}: \${modalComments.value}\`);
+        
+        // Remove from UI
+        const card = document.getElementById(\`case-card-\${currentReviewingCaseId}\`);
+        if (card) {
+            card.remove();
+        }
+        
+        // Update count
+        const currentCount = parseInt(countEl.textContent, 10);
+        if (currentCount > 0) {
+            countEl.textContent = currentCount - 1;
+        }
+
+        if (countEl.textContent === '0') {
+            listEl.innerHTML = '<div class="text-block" style="text-align:center;">No escalated cases pending. JusticeEngine-01 is handling the load efficiently!</div>';
+        }
+
+        modal.style.display = 'none';
+        modalComments.value = '';
+        
+        // Save to localStorage just for demo persistence if needed, though UI removal is enough for the session
+        let reviewed = JSON.parse(localStorage.getItem('reviewed_cases') || '[]');
+        reviewed.push(currentReviewingCaseId);
+        localStorage.setItem('reviewed_cases', JSON.stringify(reviewed));
+        
+        alert('Review submitted successfully. Case closed.');
+    });
+
+    window.openReviewModal = (caseId) => {
+        currentReviewingCaseId = caseId;
+        modalCaseId.textContent = caseId;
+        modal.style.display = 'flex';
+    };
+
     try {
         const res = await fetch('/api/escalated-cases');
         const data = await res.json();
         const cases = data.cases;
         
-        countEl.textContent = cases.length;
+        // Filter out cases already reviewed in this session
+        const reviewed = JSON.parse(localStorage.getItem('reviewed_cases') || '[]');
+        const pendingCases = cases.filter(c => !reviewed.includes(c.case_id));
 
-        if (cases.length === 0) {
+        countEl.textContent = pendingCases.length;
+
+        if (pendingCases.length === 0) {
             listEl.innerHTML = '<div class="text-block" style="text-align:center;">No escalated cases pending. JusticeEngine-01 is handling the load efficiently!</div>';
             return;
         }
 
         listEl.innerHTML = '';
-        cases.reverse().forEach((c, index) => {
+        pendingCases.reverse().forEach((c, index) => {
             const card = document.createElement('div');
             card.className = 'escalated-card';
             
             // Format reasons
             const reasonsHtml = c.reasons.map(r => `<li>${r}</li>`).join('');
 
-            card.innerHTML = `
+            card.id = \`case-card-\${c.case_id}\`;
+            card.innerHTML = \`
                 <h3>
-                    <span>Case ID: ${c.case_id}</span>
-                    <button class="btn primary-btn" style="padding: 0.3rem 0.8rem; font-size:0.85rem;" onclick="alert('Human review workflow not implemented in demo')">Start Review</button>
+                    <span>Case ID: \${c.case_id}</span>
+                    <button class="btn primary-btn" style="padding: 0.3rem 0.8rem; font-size:0.85rem;" onclick="window.openReviewModal('\${c.case_id}')">Start Review</button>
                 </h3>
                 
                 <div class="escalation-reason">

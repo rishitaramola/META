@@ -377,6 +377,7 @@ async function loadDossier() {
 
     startFactFinding();
     printLetter('registration', { caseId: currentCaseData.case_id });
+    setTimeout(() => printLetter('summons', { caseId: currentCaseData.case_id }), 1000); // Slight delay so popups don't overlap entirely
 }
 
 // ─── Digital Stamped Letters ─────────────────────────
@@ -450,6 +451,23 @@ function printLetter(type, data) {
                 <p style="margin-top:0.5rem;">${data.reasoning || 'Preliminary analysis on file.'}</p>
             </div>
             <p style="margin-top:1rem;"><em>Note: The Human Judge will receive the complete case dossier along with this document.</em></p>`;
+    } else if (type === 'summons') {
+        title = 'Official Summons Notice';
+        stampText = 'SUMMONS ISSUED';
+        stampColor = '#b91c1c';
+        body = `
+            <p>This is an <strong>official summons</strong> directing the named opposing party to participate in the dispute resolution process initiated by the petitioner.</p>
+            <table>
+                <tr><th colspan="2" style="background:#f1f5f9; padding:0.5rem; text-align:left;">Case Details</th></tr>
+                <tr><td>Case ID</td><td><strong>${data.caseId}</strong></td></tr>
+                <tr><td>Issued On</td><td><strong>${timestamp}</strong></td></tr>
+                <tr><td>Petitioner</td><td><strong>${kycData.victimName || 'Withheld'}</strong></td></tr>
+                <tr><th colspan="2" style="background:#f1f5f9; padding:0.5rem; text-align:left;">Respondent Details</th></tr>
+                <tr><td>Name/Entity</td><td><strong>${kycData.offender || 'Unknown'}</strong></td></tr>
+                <tr><th colspan="2" style="background:#f1f5f9; padding:0.5rem; text-align:left;">Action Required</th></tr>
+                <tr><td colspan="2" style="color:#b91c1c; font-weight:600;">You are hereby required to submit your defense or representation to the Justice AI Portal within 14 days of this notice. Failure to respond may result in an ex-parte preliminary ruling.</td></tr>
+            </table>
+        `;
     }
 
     const htmlContent = `<!DOCTYPE html>
