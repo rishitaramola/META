@@ -96,7 +96,7 @@ COUNCIL_AGENTS = [
     },
     {
         "name": "Agent 2 — The Constitutional Scholar",
-        "model": "deepseek/deepseek-r1:free",
+        "model": "nousresearch/hermes-3-llama-3.1-405b:free",
         "persona": (
             "You are the Constitutional Scholar on the AI Judicial Council. "
             "You reason through Constitutional law, Fundamental Rights, and statutory compliance. "
@@ -109,7 +109,7 @@ COUNCIL_AGENTS = [
     },
     {
         "name": "Agent 3 — The Legal Realist",
-        "model": "mistralai/mistral-7b-instruct:free",
+        "model": "google/gemma-3-27b-it:free",
         "persona": (
             "You are the Legal Realist on the AI Judicial Council. "
             "You analyze cases through real-world impact and practical justice. "
@@ -122,7 +122,7 @@ COUNCIL_AGENTS = [
     }
 ]
 # Chief Justice synthesizes all 3 arguments
-CHIEF_JUSTICE_MODEL = "deepseek/deepseek-r1:free"
+CHIEF_JUSTICE_MODEL = "qwen/qwen3-next-80b-a3b-instruct:free"
 
 MAX_TOTAL_REWARD       = 1.0
 SUCCESS_SCORE_THRESHOLD = 0.5
@@ -413,7 +413,7 @@ Rules:
 
     try:
         response = client.chat.completions.create(
-            model="meta-llama/llama-3.3-70b-instruct:free",
+            model="google/gemma-3-27b-it:free", # Using reliable free model
             messages=messages,
             temperature=0.3,
             max_tokens=250,
@@ -548,10 +548,18 @@ def _call_openrouter(prompt: str, model: str, retries: int = 3) -> str:
                 timeout=30
             )
             data = response.json()
+            if "error" in data:
+                err_msg = data["error"].get("message", "Unknown error")
+                if "429" in str(data.get("error", {}).get("code", "")) or "rate-limited" in err_msg.lower():
+                    # If rate limited, instantly switch to a fallback model instead of sleeping
+                    body["model"] = "google/gemma-3-27b-it:free"
+                    continue
+                else:
+                    raise Exception(f"OpenRouter API Error: {err_msg}")
             return data["choices"][0]["message"]["content"]
         except Exception as e:
             if attempt < retries - 1:
-                time.sleep(2 ** attempt)
+                time.sleep(1)
             else:
                 raise e
 
