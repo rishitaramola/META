@@ -758,15 +758,15 @@ document.getElementById('generate-btn').addEventListener('click', async () => {
 
         const isCriminal = window.__caseType === 'criminal';
         const mockVerdict = isCriminal ? 'forward_to_judge' : 'liable';
+        const summarySnippet = (kycData.caseSummary || '').substring(0, 150) + '...';
+        
         const mockRatio = isCriminal
-            ? 'This act falls under BNS Section 125 (Act endangering life). Being a minor, the case is governed by the Juvenile Justice Act 2015. The act is cognizable and bailable. This matter is forwarded to the Juvenile Justice Board for adjudication.'
-            : 'A security deposit in a residential tenancy is held in trust by the landlord. Refusal to return it without proving actual damage to the property is a breach, and the tenant is entitled to recovery under the Specific Relief Act 1963 and Section 73 of the Indian Contract Act 1872.';
+            ? 'This act requires formal criminal adjudication. (API OFFLINE FALLBACK)'
+            : 'Civil remedies are available based on the presented facts. (API OFFLINE FALLBACK)';
         const mockObiter = isCriminal
-            ? 'This court observes, obiter, that parents who knowingly permit minors to operate vehicles may face separate liability under MV Act Section 199A.'
-            : 'The court notes, obiter, that while Section 89 CPC encourages mediation, compelling the return of an undisputed security deposit in a residential dispute is straightforward and does not strictly require pre-litigation mediation.';
-        const mockReasoning = isCriminal
-            ? 'The accused is a minor (17 years) involved in a traffic collision. Under BNS Sec 125, this endangers public safety. As a minor, the Juvenile Justice Act applies. AI cannot pass a verdict on criminal matters; forwarding to human judge.'
-            : 'The landlord-tenant contract explicitly stated the Rs 10,000 security deposit would be returned upon vacating the room. Two months have passed. Under the Limitation Act 1963, a suit for recovery can be filed within 3 years, meaning this claim is perfectly valid and timely. The landlord cannot arbitrarily forfeit the deposit without providing evidence of actual property damage. The plaintiff has suffered a direct financial loss of Rs 10,000. Therefore, under the Specific Relief Act 1963 and Section 73 of the Indian Contract Act 1872, the landlord is liable to refund the full amount.';
+            ? 'The court notes the API is currently rate-limited.'
+            : 'The court notes the OpenRouter API is currently unreachable or rate-limited.';
+        const mockReasoning = '[API ERROR / OFFLINE FALLBACK]\n\nThe OpenRouter API is currently unreachable or rate-limited. The AI Judicial Council could not be contacted to analyze your specific facts:\n\n"' + summarySnippet + '"\n\nPlease check the HF Space logs or try again later. This is a generic placeholder.';
 
         document.getElementById('v-case-id').textContent = currentCaseData ? currentCaseData.case_id : 'DEMO-OFFLINE';
         const verdictEl = document.getElementById('v-verdict');
@@ -778,14 +778,10 @@ document.getElementById('generate-btn').addEventListener('click', async () => {
         const cardsEl = document.getElementById('v-council-cards');
         cardsEl.innerHTML = '';
         
-        const mockAgents = isCriminal ? [
-            { name: "Precedent Analyst", model: "Llama-3.3-70B", verdict: "forward_to_judge", confidence: 0.95, statutes: "BNS Sec 125, JJ Act", argument: "As a minor is involved, criminal jurisdiction mandates forwarding to the Juvenile Justice Board." },
-            { name: "Constitutional Scholar", model: "Qwen-2.5-72B", verdict: "forward_to_judge", confidence: 0.98, statutes: "MV Act Sec 199A", argument: "AI cannot adjudicate criminal guilt. Guardian liability must be assessed by a human judge." },
-            { name: "Legal Realist", model: "Mixtral-8x7B", verdict: "forward_to_judge", confidence: 0.92, statutes: "BNS Sec 125", argument: "Traffic collision by an unlicensed minor is clear. Forward to judge immediately." }
-        ] : [
-            { name: "Precedent Analyst", model: "Llama-3.3-70B", verdict: "liable", confidence: 0.98, statutes: "Specific Relief Act", argument: "A security deposit is legally held in trust. The landlady must return the Rs 10,000 as no property damage was reported." },
-            { name: "Constitutional Scholar", model: "Qwen-2.5-72B", verdict: "liable", confidence: 0.95, statutes: "Limitation Act 1963", argument: "The claim is well within the 3-year limitation period. The breach of contract is evident under Section 73 of the Indian Contract Act." },
-            { name: "Legal Realist", model: "Mixtral-8x7B", verdict: "liable", confidence: 0.93, statutes: "Contract Act Sec 72", argument: "The landlady is holding the Rs 10,000 unlawfully. There is no complex commercial dispute here; she simply must refund the deposit." }
+        const mockAgents = [
+            { name: "Precedent Analyst", model: "Llama-3.3-70B", verdict: mockVerdict, confidence: 0.0, statutes: "N/A", argument: "API Offline. Could not analyze: " + summarySnippet },
+            { name: "Constitutional Scholar", model: "Qwen-2.5-72B", verdict: mockVerdict, confidence: 0.0, statutes: "N/A", argument: "API Offline. Could not process constitutional implications." },
+            { name: "Legal Realist", model: "Mixtral-8x7B", verdict: mockVerdict, confidence: 0.0, statutes: "N/A", argument: "API Offline. No practical justice analysis available." }
         ];
 
         mockAgents.forEach(agent => {
