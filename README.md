@@ -71,6 +71,11 @@ The core training loop uses **GRPO** (Group Relative Policy Optimization) via th
 - **Execution:** Runs efficiently on a free Colab T4 GPU (~30-45 min).
 - **Colab Notebook:** [Link to Training Notebook](https://colab.research.google.com/github/rishitaramola/judicial-reasoning-env/blob/main/training/training_colab.ipynb)
 
+### 🏆 Training Evidence & Reward Plots (Hackathon Requirement)
+To satisfy the requirement of proving a real training run, we provide:
+1. **The Static Plot:** A verified reward curve from our T4 GPU Colab run is linked below.
+2. **Interactive Evidence:** Our [Hugging Face Space](https://huggingface.co/spaces/RishitaRamola42/judicial-reasoning-env) includes a dedicated **Training Dashboard** that allows judges to explore the 75-case curriculum, view the reward function breakdown (Accuracy, Format, Logic, Penalties), and see the exact Before/After composite rewards.
+
 ![Reward Curve](https://raw.githubusercontent.com/rishitaramola/judicial-reasoning-env/main/training_curve.png)
 
 ### Before/After Training Example

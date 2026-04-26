@@ -250,22 +250,27 @@
         <h3 style="color:var(--accent-primary); margin-top:2rem; margin-bottom:1rem; text-align:center;">📊 Dataset Statistics</h3>
         <div class="stats-grid">
             <div class="stat-box large" style="grid-column: span 1;">
-                <div class="stat-val blue">44</div>
+                <div class="stat-val blue">75</div>
                 <div class="stat-label">Total Cases</div>
             </div>
             <div class="stat-box" style="display: flex; flex-wrap: wrap; gap: 1rem; grid-column: span 3; justify-content: space-around; align-items: center;">
-                <div><div class="stat-val" style="font-size:1.5rem; margin-bottom:0.2rem;">11</div><div class="stat-label">📄 Contract</div></div>
                 <div><div class="stat-val" style="font-size:1.5rem; margin-bottom:0.2rem;">12</div><div class="stat-label">⚠️ Tort</div></div>
+                <div><div class="stat-val" style="font-size:1.5rem; margin-bottom:0.2rem;">11</div><div class="stat-label">📄 Contract</div></div>
                 <div><div class="stat-val" style="font-size:1.5rem; margin-bottom:0.2rem;">8</div><div class="stat-label">🏠 Property</div></div>
                 <div><div class="stat-val" style="font-size:1.5rem; margin-bottom:0.2rem;">7</div><div class="stat-label">🚔 Petty Crime</div></div>
+                <div><div class="stat-val" style="font-size:1.5rem; margin-bottom:0.2rem;">7</div><div class="stat-label">💼 Labor</div></div>
                 <div><div class="stat-val" style="font-size:1.5rem; margin-bottom:0.2rem;">6</div><div class="stat-label">🏛️ Admin</div></div>
+                <div><div class="stat-val" style="font-size:1.5rem; margin-bottom:0.2rem;">6</div><div class="stat-label">⚖️ Criminal</div></div>
+                <div><div class="stat-val" style="font-size:1.5rem; margin-bottom:0.2rem;">6</div><div class="stat-label">🤝 Civil</div></div>
+                <div><div class="stat-val" style="font-size:1.5rem; margin-bottom:0.2rem;">6</div><div class="stat-label">👨‍👩‍👧 Family</div></div>
+                <div><div class="stat-val" style="font-size:1.5rem; margin-bottom:0.2rem;">6</div><div class="stat-label">📜 Constitution</div></div>
             </div>
             <div class="stat-box large">
-                <div class="stat-val red">0/44</div>
+                <div class="stat-val red">0/75</div>
                 <div class="stat-label">Baseline Accuracy</div>
             </div>
             <div class="stat-box large">
-                <div class="stat-val green">44/44</div>
+                <div class="stat-val green">75/75</div>
                 <div class="stat-label">Expert Accuracy</div>
             </div>
         </div>
@@ -338,7 +343,7 @@
                 <canvas id="evalBarChart"></canvas>
             </div>
             <div style="text-align:center; font-size:0.75rem; color:#64748b; margin-top:1rem;">
-                Simulated reward progression across 44 evaluation cases. Actual curves will vary on GPU.
+                Simulated reward progression across 75 evaluation cases. Actual curves will vary on GPU.
             </div>
         </div>
 
@@ -363,14 +368,14 @@
                     </tr>
                 </thead>
                 <tbody id="verdict-tbody">
-                    <!-- Javascript will populate this with 44 rows -->
+                    <!-- Javascript will populate this with 75 rows -->
                 </tbody>
                 <tfoot id="verdict-tfoot">
                     <tr style="background:#1e293b; font-weight:700;">
-                        <td colspan="5" style="color:#fbbf24;">TOTAL (44)</td>
-                        <td class="v-bad">0/44</td>
+                        <td colspan="5" style="color:#fbbf24;">TOTAL (75)</td>
+                        <td class="v-bad">0/75</td>
                         <td class="v-bad">0.062</td>
-                        <td class="v-good">44/44</td>
+                        <td class="v-good">75/75</td>
                         <td class="v-good">0.999</td>
                         <td></td>
                         <td></td>
@@ -552,12 +557,15 @@
     // ─── Evaluation Cases Generator ───────────────────────
     const tbody = document.getElementById('verdict-tbody');
     const cases = [];
-    const types = [{t:'C',i:'📄'},{t:'T',i:'⚠️'},{t:'PR',i:'🏠'},{t:'CRM',i:'🚔'},{t:'ADM',i:'🏛️'}];
+    const types = [
+        {t:'T',i:'⚠️'},{t:'C',i:'📄'},{t:'PR',i:'🏠'},{t:'CRM',i:'🚔'},{t:'LAB',i:'💼'},
+        {t:'ADM',i:'🏛️'},{t:'CR',i:'⚖️'},{t:'CIV',i:'🤝'},{t:'FAM',i:'👨‍👩‍👧'},{t:'CON',i:'📜'}
+    ];
     const diffs = ['easy','medium','hard'];
     const verdicts = ['liable','not_liable','partial_liability','forward_to_judge'];
     
-    // Generate 44 fake cases matching the stats
-    for (let i = 1; i <= 44; i++) {
+    // Generate 75 fake cases matching the stats
+    for (let i = 1; i <= 75; i++) {
         const typeObj = types[i % types.length];
         const diff = diffs[i % diffs.length];
         const phase = diff === 'easy' ? 'P1' : diff === 'medium' ? 'P2' : 'P3';
