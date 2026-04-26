@@ -124,7 +124,7 @@ We trained an 8B parameter model for 250 steps using `GRPOTrainer` with Unsloth.
 
 The model stopped hallucinating precedents and started correctly defaulting criminal cases to `forward_to_judge` with properly cited BNS sections.
 
-![Training Curves](training_curve.png)
+![Training Curves](https://raw.githubusercontent.com/rishitaramola/judicial-reasoning-env/main/training_curve.png)
 
 ---
 
@@ -140,7 +140,7 @@ The model stopped hallucinating precedents and started correctly defaulting crim
 
 **Try it yourself:**
 - **Live Demo:** [HuggingFace Space](https://huggingface.co/spaces/RishitaRamola42/judicial-reasoning-env)
-- **Train it:** [Colab Notebook](https://colab.research.google.com/github/Sarthaksingh2005/Judicial-Reasoning-RL-Environment/blob/master/training_notebook.ipynb)
-- **Code:** [GitHub Repository](https://github.com/Sarthaksingh2005/Judicial-Reasoning-RL-Environment)
+- **Train it:** [Colab Notebook](https://colab.research.google.com/github/rishitaramola/judicial-reasoning-env/blob/main/training/training_colab.ipynb)
+- **Code:** [GitHub Repository](https://github.com/rishitaramola/judicial-reasoning-env)
 
 *Team ALACRITY — Rishita Ramola & Sarthak Singh | OpenEnv Hackathon | Scaler × Meta | April 2026*
