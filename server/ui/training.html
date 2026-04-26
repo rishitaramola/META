@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Dashboard - JusticeEngine-01</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        body { overflow-y: auto; }
+        .train-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.5rem 2rem; background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .train-header h1 { font-size: 1.4rem; display: flex; align-items: center; gap: 0.75rem; }
+        .train-main { padding: 2rem; max-width: 1200px; margin: 0 auto; }
+
+        /* Stats row */
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card {
+            background: var(--bg-panel); backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem;
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .stat-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--gold));
+        }
+        .stat-card .stat-value { font-size: 1.8rem; font-weight: 700; color: var(--accent-primary); }
+        .stat-card .stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem; }
+
+        /* Config table */
+        .config-section { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+        @media (max-width: 768px) { .config-section { grid-template-columns: 1fr; } }
+        .config-panel {
+            background: var(--bg-panel); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 1.5rem;
+        }
+        .config-panel h3 { margin-top: 0; color: var(--accent-primary); margin-bottom: 1rem; font-size: 1rem; }
+        .config-table { width: 100%; border-collapse: collapse; }
+        .config-table td { padding: 0.5rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
+        .config-table td:first-child { color: var(--muted); width: 45%; }
+        .config-table td:last-child { font-weight: 600; }
+
+        /* Chart area */
+        .chart-section { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+        @media (max-width: 768px) { .chart-section { grid-template-columns: 1fr; } }
+        .chart-panel {
+            background: var(--bg-panel); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 1.5rem;
+        }
+        .chart-panel h3 { margin-top: 0; color: var(--gold); margin-bottom: 1rem; }
+        .chart-panel canvas { width: 100% !important; max-height: 300px; }
+
+        /* Progress bar */
+        .progress-container { margin-bottom: 2rem; }
+        .progress-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
+        .progress-header span { font-size: 0.85rem; color: var(--muted); }
+        .progress-header .phase-label { color: var(--gold); font-weight: 600; }
+        .progress-bar-bg {
+            width: 100%; height: 24px; background: rgba(255,255,255,0.05);
+            border-radius: 12px; overflow: hidden; position: relative;
+        }
+        .progress-bar-fill {
+            height: 100%; border-radius: 12px; transition: width 1.5s ease;
+            background: linear-gradient(90deg, #6366f1, #a855f7, var(--gold));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem; font-weight: 700; color: #000;
+        }
+
+        /* Log area */
+        .log-panel {
+            background: #0a0e1a; border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 1rem; max-height: 250px; overflow-y: auto;
+            font-family: 'Courier New', monospace; font-size: 0.78rem; line-height: 1.6;
+        }
+        .log-panel .log-ok { color: #4ade80; }
+        .log-panel .log-warn { color: #fbbf24; }
+        .log-panel .log-info { color: #60a5fa; }
+        .log-panel .log-step { color: #c084fc; }
+
+        /* Curriculum timeline */
+        .curriculum-timeline { display: flex; gap: 0; margin-bottom: 2rem; }
+        .phase-block {
+            flex: 1; padding: 1rem; text-align: center; position: relative;
+            border: 1px solid var(--border-color); transition: all 0.3s ease;
+        }
+        .phase-block:first-child { border-radius: 12px 0 0 12px; }
+        .phase-block:last-child { border-radius: 0 12px 12px 0; }
+        .phase-block.active { background: rgba(99,102,241,0.15); border-color: var(--accent-primary); }
+        .phase-block.done { background: rgba(74,222,128,0.1); border-color: #4ade80; }
+        .phase-block .phase-num { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+        .phase-block .phase-title { font-weight: 700; font-size: 0.95rem; margin: 0.25rem 0; }
+        .phase-block .phase-detail { font-size: 0.75rem; color: var(--muted); }
+
+        /* Action buttons */
+        .action-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem; }
+        .action-btn {
+            padding: 0.75rem 1.5rem; border-radius: 8px; border: none;
+            font-weight: 600; font-size: 0.9rem; cursor: pointer;
+            font-family: 'Inter', sans-serif; transition: all 0.2s ease;
+        }
+        .action-btn.primary { background: linear-gradient(135deg, #6366f1, #a855f7); color: white; }
+        .action-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(99,102,241,0.4); }
+        .action-btn.secondary { background: rgba(255,255,255,0.05); color: var(--text-color); border: 1px solid var(--border-color); }
+        .action-btn.secondary:hover { background: rgba(255,255,255,0.1); }
+        .action-btn.success { background: linear-gradient(135deg, #059669, #10b981); color: white; }
+
+        .badge-live { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
+        .badge-live.running { background: rgba(74,222,128,0.15); color: #4ade80; }
+        .badge-live.idle { background: rgba(251,191,36,0.15); color: #fbbf24; }
+        .pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+    </style>
+</head>
+<body>
+    <header class="train-header">
+        <div style="display:flex; align-items:center; gap:1rem;">
+            <h1>🧠 Training Dashboard</h1>
+            <span class="badge-live idle" id="status-badge"><span class="pulse-dot"></span> <span id="status-text">Idle</span></span>
+        </div>
+        <a href="/" class="btn secondary-btn">← Back to Portal</a>
+    </header>
+
+    <main class="train-main">
+        <!-- Stats Row -->
+        <div class="stats-row">
+            <div class="stat-card"><div class="stat-value" id="s-model">Llama 3.1 8B</div><div class="stat-label">Base Model</div></div>
+            <div class="stat-card"><div class="stat-value" id="s-cases">75</div><div class="stat-label">Training Cases</div></div>
+            <div class="stat-card"><div class="stat-value" id="s-steps">0 / 250</div><div class="stat-label">Steps Completed</div></div>
+            <div class="stat-card"><div class="stat-value" id="s-reward">—</div><div class="stat-label">Current Reward</div></div>
+        </div>
+
+        <!-- Curriculum Timeline -->
+        <h3 style="color:var(--muted); font-size:0.85rem; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.75rem;">📚 Curriculum Phases</h3>
+        <div class="curriculum-timeline" id="curriculum-timeline">
+            <div class="phase-block" id="phase-1">
+                <div class="phase-num">Phase 1 — Steps 1-100</div>
+                <div class="phase-title">🟢 Easy Cases</div>
+                <div class="phase-detail">Contract disputes only</div>
+            </div>
+            <div class="phase-block" id="phase-2">
+                <div class="phase-num">Phase 2 — Steps 101-175</div>
+                <div class="phase-title">🟡 Easy + Medium</div>
+                <div class="phase-detail">+ Tort cases added</div>
+            </div>
+            <div class="phase-block" id="phase-3">
+                <div class="phase-num">Phase 3 — Steps 176-250</div>
+                <div class="phase-title">🔴 All Difficulties</div>
+                <div class="phase-detail">+ Property + BNS Crime</div>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-header">
+                <span class="phase-label" id="progress-label">Not started</span>
+                <span id="progress-pct">0%</span>
+            </div>
+            <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+        </div>
+
+        <!-- Actions -->
+        <div class="action-row">
+            <button class="action-btn primary" id="btn-simulate">▶ Simulate Training Run</button>
+            <a href="https://colab.research.google.com/github/rishitaramola/judicial-reasoning-env/blob/main/training/training_colab.ipynb" target="_blank" class="action-btn secondary">📓 Open in Google Colab</a>
+            <button class="action-btn secondary" id="btn-reset-sim">🔄 Reset</button>
+        </div>
+
+        <!-- Config + Chart -->
+        <div class="chart-section">
+            <div class="chart-panel">
+                <h3>📈 Reward Curve (Live)</h3>
+                <canvas id="rewardChart"></canvas>
+            </div>
+            <div class="chart-panel">
+                <h3>🎯 Reward Breakdown</h3>
+                <canvas id="breakdownChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Config Tables -->
+        <div class="config-section">
+            <div class="config-panel">
+                <h3>⚙️ Model Configuration</h3>
+                <table class="config-table">
+                    <tr><td>Base Model</td><td>unsloth/Meta-Llama-3.1-8B-Instruct</td></tr>
+                    <tr><td>Quantization</td><td>4-bit (QLoRA)</td></tr>
+                    <tr><td>LoRA Rank</td><td>16</td></tr>
+                    <tr><td>LoRA Alpha</td><td>16</td></tr>
+                    <tr><td>Max Seq Length</td><td>1024 tokens</td></tr>
+                    <tr><td>Hardware</td><td>Google Colab T4 GPU (free)</td></tr>
+                </table>
+            </div>
+            <div class="config-panel">
+                <h3>🏋️ Training Hyperparameters</h3>
+                <table class="config-table">
+                    <tr><td>Algorithm</td><td>GRPO (Group Relative Policy Optimization)</td></tr>
+                    <tr><td>Learning Rate</td><td>5e-6</td></tr>
+                    <tr><td>Batch Size</td><td>4</td></tr>
+                    <tr><td>Num Generations</td><td>6 per prompt</td></tr>
+                    <tr><td>Total Steps</td><td>250 (3 phases)</td></tr>
+                    <tr><td>Reward Functions</td><td>format, accuracy, logic, process</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Training Log -->
+        <div class="config-panel" style="margin-bottom:2rem;">
+            <h3 style="color:var(--accent-primary);">📋 Training Log</h3>
+            <div class="log-panel" id="training-log">
+                <div class="log-info">[INFO] Training dashboard loaded. Click "Simulate Training Run" to see a live demo.</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+    // ─── Charts ───────────────────────────────────────────
+    const ctxReward = document.getElementById('rewardChart').getContext('2d');
+    const rewardChart = new Chart(ctxReward, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [
+                { label: 'Total Reward', data: [], borderColor: '#a855f7', backgroundColor: 'rgba(168,85,247,0.1)', fill: true, tension: 0.3, pointRadius: 0 },
+                { label: 'Format', data: [], borderColor: '#6366f1', borderDash: [5,3], tension: 0.3, pointRadius: 0 },
+                { label: 'Accuracy', data: [], borderColor: '#4ade80', borderDash: [5,3], tension: 0.3, pointRadius: 0 },
+                { label: 'Logic', data: [], borderColor: '#fbbf24', borderDash: [5,3], tension: 0.3, pointRadius: 0 },
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            scales: { y: { min: 0, max: 1, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }, x: { grid: { display: false }, ticks: { color: '#94a3b8', maxTicksLimit: 10 } } },
+            plugins: { legend: { labels: { color: '#94a3b8', boxWidth: 12 } } }
+        }
+    });
+
+    const ctxBreak = document.getElementById('breakdownChart').getContext('2d');
+    const breakdownChart = new Chart(ctxBreak, {
+        type: 'radar',
+        data: {
+            labels: ['Format', 'Accuracy', 'Logic', 'Process'],
+            datasets: [
+                { label: 'Before', data: [0.3, 0.25, 0.2, 0.15], backgroundColor: 'rgba(239,68,68,0.15)', borderColor: '#ef4444', pointRadius: 3 },
+                { label: 'After', data: [0.3, 0.25, 0.2, 0.15], backgroundColor: 'rgba(74,222,128,0.15)', borderColor: '#4ade80', pointRadius: 3 }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            scales: { r: { min: 0, max: 1, grid: { color: 'rgba(255,255,255,0.1)' }, pointLabels: { color: '#94a3b8' }, ticks: { display: false } } },
+            plugins: { legend: { labels: { color: '#94a3b8', boxWidth: 12 } } }
+        }
+    });
+
+    // ─── Simulation ───────────────────────────────────────
+    const logEl = document.getElementById('training-log');
+    function addLog(text, cls = 'log-info') {
+        const line = document.createElement('div');
+        line.className = cls;
+        line.textContent = `[${new Date().toLocaleTimeString()}] ${text}`;
+        logEl.appendChild(line);
+        logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    const PHASES = [
+        { steps: 100, label: 'Phase 1 — Easy', id: 'phase-1' },
+        { steps: 75, label: 'Phase 2 — Easy+Medium', id: 'phase-2' },
+        { steps: 75, label: 'Phase 3 — All', id: 'phase-3' },
+    ];
+
+    let simRunning = false;
+    let currentStep = 0;
+
+    document.getElementById('btn-simulate').addEventListener('click', () => {
+        if (simRunning) return;
+        simRunning = true;
+        currentStep = 0;
+        document.getElementById('status-badge').className = 'badge-live running';
+        document.getElementById('status-text').textContent = 'Training';
+        rewardChart.data.labels = [];
+        rewardChart.data.datasets.forEach(d => d.data = []);
+        rewardChart.update();
+        addLog('Starting GRPO training simulation...', 'log-ok');
+        addLog('Model: unsloth/Meta-Llama-3.1-8B-Instruct (4-bit)', 'log-info');
+        addLog('Loading 75 Indian legal cases from data/cases.json...', 'log-info');
+        simulateStep();
+    });
+
+    document.getElementById('btn-reset-sim').addEventListener('click', () => {
+        simRunning = false;
+        currentStep = 0;
+        document.getElementById('s-steps').textContent = '0 / 250';
+        document.getElementById('s-reward').textContent = '—';
+        document.getElementById('progress-fill').style.width = '0%';
+        document.getElementById('progress-pct').textContent = '0%';
+        document.getElementById('progress-label').textContent = 'Not started';
+        document.getElementById('status-badge').className = 'badge-live idle';
+        document.getElementById('status-text').textContent = 'Idle';
+        document.querySelectorAll('.phase-block').forEach(p => { p.classList.remove('active','done'); });
+        rewardChart.data.labels = [];
+        rewardChart.data.datasets.forEach(d => d.data = []);
+        rewardChart.update();
+        breakdownChart.data.datasets[1].data = [0.3, 0.25, 0.2, 0.15];
+        breakdownChart.update();
+        logEl.innerHTML = '<div class="log-info">[INFO] Simulation reset.</div>';
+    });
+
+    function simulateStep() {
+        if (!simRunning || currentStep >= 250) {
+            simRunning = false;
+            document.getElementById('status-badge').className = 'badge-live idle';
+            document.getElementById('status-text').textContent = 'Complete';
+            addLog('Training complete! LoRA adapter saved to outputs/justice_engine_lora/', 'log-ok');
+            addLog('Final reward: ' + document.getElementById('s-reward').textContent, 'log-ok');
+            return;
+        }
+
+        currentStep += 5;
+        const pct = Math.min(100, Math.round((currentStep / 250) * 100));
+
+        // Determine current phase
+        let phaseLabel = 'Phase 1 — Easy';
+        if (currentStep <= 100) {
+            document.getElementById('phase-1').className = 'phase-block active';
+            phaseLabel = 'Phase 1 — Easy';
+        } else if (currentStep <= 175) {
+            document.getElementById('phase-1').className = 'phase-block done';
+            document.getElementById('phase-2').className = 'phase-block active';
+            phaseLabel = 'Phase 2 — Easy+Medium';
+            if (currentStep === 105) addLog('Phase 2: Adding Tort cases to curriculum', 'log-step');
+        } else {
+            document.getElementById('phase-1').className = 'phase-block done';
+            document.getElementById('phase-2').className = 'phase-block done';
+            document.getElementById('phase-3').className = 'phase-block active';
+            phaseLabel = 'Phase 3 — All Difficulties';
+            if (currentStep === 180) addLog('Phase 3: Adding Property + BNS Criminal cases', 'log-step');
+        }
+
+        // Simulate reward curves with realistic noise
+        const progress = currentStep / 250;
+        const noise = () => (Math.random() - 0.5) * 0.08;
+        const formatR = Math.min(0.95, 0.3 + progress * 0.6 + noise());
+        const accR = Math.min(0.92, 0.25 + progress * 0.55 + noise());
+        const logicR = Math.min(0.88, 0.2 + progress * 0.5 + noise());
+        const totalR = (formatR + accR + logicR) / 3;
+
+        rewardChart.data.labels.push(currentStep);
+        rewardChart.data.datasets[0].data.push(parseFloat(totalR.toFixed(3)));
+        rewardChart.data.datasets[1].data.push(parseFloat(formatR.toFixed(3)));
+        rewardChart.data.datasets[2].data.push(parseFloat(accR.toFixed(3)));
+        rewardChart.data.datasets[3].data.push(parseFloat(logicR.toFixed(3)));
+        rewardChart.update('none');
+
+        // Update radar
+        breakdownChart.data.datasets[1].data = [
+            parseFloat(formatR.toFixed(2)),
+            parseFloat(accR.toFixed(2)),
+            parseFloat(logicR.toFixed(2)),
+            parseFloat((0.15 + progress * 0.55).toFixed(2))
+        ];
+        breakdownChart.update('none');
+
+        // Update UI
+        document.getElementById('s-steps').textContent = `${Math.min(currentStep, 250)} / 250`;
+        document.getElementById('s-reward').textContent = totalR.toFixed(3);
+        document.getElementById('progress-fill').style.width = pct + '%';
+        document.getElementById('progress-pct').textContent = pct + '%';
+        document.getElementById('progress-label').textContent = phaseLabel;
+
+        if (currentStep % 25 === 0) {
+            addLog(`Step ${currentStep}/250 | reward=${totalR.toFixed(3)} | format=${formatR.toFixed(3)} | accuracy=${accR.toFixed(3)} | logic=${logicR.toFixed(3)}`, 'log-warn');
+        }
+
+        setTimeout(simulateStep, 200);
+    }
+    </script>
+</body>
+</html>

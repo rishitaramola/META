@@ -343,6 +343,14 @@ def judge_dashboard():
 def judge_js():
     return FileResponse(os.path.join(ui_dir, "judge.js"))
 
+@app.get("/training", include_in_schema=False)
+def training_dashboard():
+    return FileResponse(os.path.join(ui_dir, "training.html"))
+
+@app.get("/police_dashboard.html", include_in_schema=False)
+def police_dashboard():
+    return FileResponse(os.path.join(ui_dir, "police_dashboard.html"))
+
 @app.post("/chat", response_model=ChatResponse)
 def fact_finding_chat(request: ChatRequest):
     """Real LLM-powered fact-finding chat using Groq/Llama-3.3."""
